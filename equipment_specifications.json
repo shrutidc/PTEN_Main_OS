@@ -1,0 +1,146 @@
+{
+  "units": "US customary (feet)",
+  "notes": "Approximate trailer dimensions for common completions equipment. Values reflect typical on-road legal configurations; actual builds vary by OEM and region.",
+  "equipment": {
+    "frac_pump_trailer": {
+      "length_ft_range": [
+        45,
+        53
+      ],
+      "width_ft_standard": 8.5,
+      "height_ft_range": [
+        12.0,
+        13.5
+      ],
+      "comments": "Includes pump, engine/driver, transmission. Often on 48\u201353 ft tri/quad-axle trailers.",
+      "safety_exclusion_zone": {
+        "offsets_ft": {
+          "front_ft": 1,
+          "rear_ft": 1,
+          "left_ft": 1,
+          "right_ft": 1
+        }
+      }
+    },
+    "blender_trailer": {
+      "length_ft_range": [
+        40,
+        48
+      ],
+      "width_ft_standard": 8.5,
+      "height_ft_range": [
+        12.0,
+        13.5
+      ],
+      "comments": "Mixing tub, hydration, chemical addition systems onboard.",
+      "safety_exclusion_zone": {
+        "offsets_ft": {
+          "front_ft": 10,
+          "rear_ft": 0,
+          "left_ft": 5,
+          "right_ft": 5
+        }
+      }
+    },
+    "chemical_skid_trailer": {
+      "length_ft_range": [
+        20,
+        32
+      ],
+      "width_ft_standard": 8.5,
+      "height_ft_range": [
+        10.0,
+        12.5
+      ],
+      "comments": "Modular chemical tanks/pumps on a tandem-axle bumper-pull or gooseneck.",
+      "safety_exclusion_zone": {
+        "offsets_ft": {
+          "front_ft": 5,
+          "rear_ft": 5,
+          "left_ft": 5,
+          "right_ft": 5
+        }
+      }
+    },
+    "manifold_trailer": {
+      "length_ft_range": [
+        35,
+        48
+      ],
+      "width_ft_standard": 8.5,
+      "height_ft_range": [
+        10.0,
+        12.5
+      ],
+      "comments": "High\u2011pressure treating iron, valves, and control manifolds.",
+      "safety_exclusion_zone": {
+        "offsets_ft": {
+          "front_ft": 5,
+          "rear_ft": 5,
+          "left_ft": 10,
+          "right_ft": 10
+        }
+      }
+    },
+    "sand_equipment_trailer": {
+      "length_ft_range": [
+        48,
+        53
+      ],
+      "width_ft_standard": 8.5,
+      "height_ft_range": [
+        12.0,
+        13.5
+      ],
+      "comments": "Covers mobile sand conveyor/transfer units or trailer\u2011mounted storage; silo systems may exceed these ranges.",
+      "safety_exclusion_zone": {
+        "offsets_ft": {
+          "front_ft": 15,
+          "rear_ft": 10,
+          "left_ft": 1,
+          "right_ft": 1
+        }
+      }
+    },
+    "wireline_trailer": {
+      "length_ft_range": [
+        28,
+        36
+      ],
+      "width_ft_standard": 8.5,
+      "height_ft_range": [
+        11.0,
+        12.5
+      ],
+      "comments": "Control cabin with winch drum; some operations use truck\u2011mounted bodies instead of trailers.",
+      "safety_exclusion_zone": {
+        "offsets_ft": {
+          "front_ft": 10,
+          "rear_ft": 25,
+          "left_ft": 10,
+          "right_ft": 10
+        }
+      }
+    },
+    "datavan_trailer": {
+      "length_ft_range": [
+        40,
+        53
+      ],
+      "width_ft_standard": 8.5,
+      "height_ft_range": [
+        12.0,
+        13.5
+      ],
+      "comments": "Engineering/control cabin; sometimes a 20\u201340 ft container on a chassis.",
+      "safety_exclusion_zone": {
+        "offsets_ft": {
+          "front_ft": 10,
+          "rear_ft": 10,
+          "left_ft": 10,
+          "right_ft": 10
+        }
+      }
+    }
+  }
+}
