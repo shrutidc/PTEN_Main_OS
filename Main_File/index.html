@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patterson-UTI Well Site Layout Planner</title>
+    <title>Smart Pad Layout Optimizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -188,7 +188,7 @@
             </div>
             <div id="loadingOverlay" class="absolute inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center hidden z-30">
                 <div class="loader"></div>
-                <p class="text-white text-lg mt-4 tracking-wider">AI is analyzing the site...</p>
+                <p id="loadingText" class="text-white text-lg mt-4 tracking-wider">AI is analyzing the site...</p>
             </div>
             <div id="infoBox" class="absolute top-4 right-4 bg-gray-900 bg-opacity-80 backdrop-blur-sm border border-gray-700 p-4 rounded-lg shadow-2xl text-sm z-20 hidden w-64">
                 <p class="font-bold text-base text-white mb-2"><strong>Selected:</strong> <span id="infoName"></span></p>
@@ -229,6 +229,7 @@
         const equipmentLibraryEl = document.getElementById('equipment-library');
         const clearCanvasBtn = document.getElementById('clearCanvasBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
         
         const infoBox = document.getElementById('infoBox');
         const infoName = document.getElementById('infoName');
@@ -1577,13 +1578,24 @@
             draw();
         }
 
-        function imageToBase64(img) {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            return canvas.toDataURL('image/jpeg').split(',')[1];
+        function imageToBase64(img, maxDim = 1024) {
+            const tempCanvas = document.createElement('canvas');
+            const aspect = img.width / img.height;
+            let width, height;
+
+            if (img.width > img.height) {
+                width = Math.min(img.width, maxDim);
+                height = width / aspect;
+            } else {
+                height = Math.min(img.height, maxDim);
+                width = height * aspect;
+            }
+
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(img, 0, 0, width, height);
+            return tempCanvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         }
 
         async function handleOptimize() {
@@ -1592,6 +1604,7 @@
                 return;
             }
             
+            loadingText.textContent = 'Preparing image for AI...';
             loadingOverlay.classList.remove('hidden');
             aiResultsEl.classList.add('hidden');
             aiSuggestions = [];
@@ -1605,7 +1618,7 @@
                 acc[type] = 1;
                 return acc;
             }, {});
-            equipmentToRequest[selectedEquipmentType] = count;
+            equipmentToRequest[selectedEquipmentType || 'frac_pump'] = count; // Default to frac_pump if none selected
             const equipmentListString = Object.entries(equipmentToRequest).map(([type, num]) => `${num} ${equipmentData[type].name}(s)`).join(', ');
 
 
@@ -1626,6 +1639,9 @@ Constraints:
 
 Required Output Format: A single, valid JSON object with a "layout" key. "layout" must be an array of objects. Each object must have "type" (from the equipment list), "x" (center coordinate in feet), "y" (center coordinate in feet), and "rotation" (in degrees).
 `;
+            
+            loadingText.textContent = 'AI is analyzing the site...';
+            const base64ImageData = imageToBase64(backgroundImage);
 
             const payload = {
                 contents: [{
@@ -1659,21 +1675,23 @@ Required Output Format: A single, valid JSON object with a "layout" key. "layout
                 const aiResponse = JSON.parse(cleanedText);
 
                 if (aiResponse.layout && Array.isArray(aiResponse.layout)) {
-                    // Group the frac pumps
-                    const fracPumps = aiResponse.layout.filter(item => item.type === selectedEquipmentType);
-                    const otherItems = aiResponse.layout.filter(item => item.type !== selectedEquipmentType);
+                    placedEquipment = []; // Clear existing to place the full new layout
+                    nextEquipmentIndex = 1;
+                    
+                    const mainEquipmentType = selectedEquipmentType || 'frac_pump';
+                    const mainItems = aiResponse.layout.filter(item => item.type === mainEquipmentType);
+                    const otherItems = aiResponse.layout.filter(item => item.type !== mainEquipmentType);
 
-                    if (fracPumps.length > 0) {
-                        const pumpGroup = createTemporaryGroup(fracPumps.length, selectedEquipmentType, {x: 0, y: 0}); // Center will be recalculated
+                    if (mainItems.length > 0) {
+                        const mainItemGroup = createTemporaryGroup(mainItems.length, mainEquipmentType, {x: 0, y: 0});
                         
-                        // Recalculate group center
-                        const avgX = fracPumps.reduce((sum, p) => sum + p.x, 0) / fracPumps.length;
-                        const avgY = fracPumps.reduce((sum, p) => sum + p.y, 0) / fracPumps.length;
-                        pumpGroup.x = avgX;
-                        pumpGroup.y = avgY;
+                        const avgX = mainItems.reduce((sum, p) => sum + p.x, 0) / mainItems.length;
+                        const avgY = mainItems.reduce((sum, p) => sum + p.y, 0) / mainItems.length;
+                        mainItemGroup.x = avgX;
+                        mainItemGroup.y = avgY;
                         
-                        // Place group and other items
-                        placeTemporaryGroup(pumpGroup);
+                        placeTemporaryGroup(mainItemGroup);
+                        
                         otherItems.forEach(item => {
                             const spec = equipmentData[item.type];
                              placedEquipment.push({
@@ -1790,3 +1808,4 @@ Required Output Format: A single, valid JSON object with a "layout" key. "layout
 </script>
 </body>
 </html>
+
