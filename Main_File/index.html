@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -156,6 +157,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-3 mt-2">
                              <button id="unlockGroupBtn" title="Select a locked group to unlock it" class="text-sm bg-indigo-600 text-white py-2 px-3 rounded-md hover:bg-indigo-500 transition-all flex items-center justify-center space-x-2">🔓<span>Unlock Group</span></button>
+                             <button id="deleteSelectedBtn" title="Delete the selected equipment or group" class="text-sm bg-red-700 text-white py-2 px-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2">🗑️<span>Delete Selected</span></button>
                         </div>
                         <button id="optimizeBtn" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-500 transition-all font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center space-x-2 mt-4">🧠<span>AI Optimize Layout</span></button>
                     </div>
@@ -186,7 +188,7 @@
             </div>
             <div id="loadingOverlay" class="absolute inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center hidden z-30">
                 <div class="loader"></div>
-                <p class="text-white text-lg mt-4 tracking-wider">AI is optimizing the layout...</p>
+                <p class="text-white text-lg mt-4 tracking-wider">AI is analyzing the site...</p>
             </div>
             <div id="infoBox" class="absolute top-4 right-4 bg-gray-900 bg-opacity-80 backdrop-blur-sm border border-gray-700 p-4 rounded-lg shadow-2xl text-sm z-20 hidden w-64">
                 <p class="font-bold text-base text-white mb-2"><strong>Selected:</strong> <span id="infoName"></span></p>
@@ -243,6 +245,7 @@
         const addExclusionZoneBtn = document.getElementById('addExclusionZoneBtn');
         const deleteZoneBtn = document.getElementById('deleteZoneBtn');
         const unlockGroupBtn = document.getElementById('unlockGroupBtn');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
         const createLayoutBtn = document.getElementById('createLayoutBtn');
         const placeLayoutBtn = document.getElementById('placeLayoutBtn');
         const exportCsvBtn = document.getElementById('exportCsvBtn');
@@ -269,6 +272,8 @@
         let placedEquipment = [];
         let exclusionZones = [];
         let activeLayoutGroup = null;
+        let nextEquipmentIndex = 1;
+        let aiSuggestions = [];
 
         let selectedItem = null;
         let isDragging = false;
@@ -317,7 +322,7 @@
              return { x: screenX, y: screenY };
         }
 
-        function drawEquipment(item, fontScale = 1) {
+        function drawEquipment(item, fontScale = 1, forceVibrant = false) {
             ctx.save();
             ctx.translate(item.x * scale, item.y * scale);
             ctx.rotate(item.rotation * Math.PI / 180);
@@ -326,7 +331,7 @@
             const itemWidth = (item.realWidth || spec.width) * scale;
             const itemLength = (item.realLength || spec.length) * scale;
             
-            const isLocked = item.locked;
+            const isLocked = item.locked && !forceVibrant;
             ctx.globalAlpha = isLocked ? 0.6 : 1.0;
 
             if (selectedItem && selectedItem.id === item.id && !isLocked) {
@@ -393,6 +398,29 @@
                 ctx.restore(); 
             }
             
+            if (item.index) {
+                const circleRadius = 12 * fontScale / zoom;
+                const indexFontSize = 14 * fontScale / zoom;
+                
+                // Position in the top-left corner relative to the unrotated equipment
+                const xPos = -itemWidth / 2 + circleRadius;
+                const yPos = -itemLength / 2 + circleRadius;
+
+                ctx.beginPath();
+                ctx.arc(xPos, yPos, circleRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 1 / zoom;
+                ctx.stroke();
+
+                ctx.fillStyle = 'black';
+                ctx.font = `bold ${indexFontSize}px Inter`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.index, xPos, yPos);
+            }
+            
             if (isLocked) {
                  ctx.save();
                  ctx.rotate(Math.PI / 2);
@@ -432,12 +460,13 @@
             });
         }
 
-        function drawGroupLabel(item, fontScale = 1) {
+        function drawGroupLabel(item, fontScale = 1, forceVibrant = false) {
             ctx.save();
             ctx.translate(item.x * scale, item.y * scale);
             ctx.rotate(item.rotation * Math.PI / 180);
             
-            ctx.globalAlpha = item.locked ? 0.6 : 1.0;
+            const isLocked = item.locked && !forceVibrant;
+            ctx.globalAlpha = isLocked ? 0.6 : 1.0;
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
 
             ctx.save();
@@ -464,8 +493,29 @@
                 }
             }
             ctx.restore();
+
+            if (item.index) {
+                const circleRadius = 14 * fontScale / zoom;
+                const indexFontSize = 16 * fontScale / zoom;
+                const xPos = 0;
+                const yPos = -item.height * scale / 2 - circleRadius - (5 / zoom);
+
+                ctx.beginPath();
+                ctx.arc(xPos, yPos, circleRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 1 / zoom;
+                ctx.stroke();
+
+                ctx.fillStyle = 'black';
+                ctx.font = `bold ${indexFontSize}px Inter`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.index, xPos, yPos);
+            }
             
-            if (item.locked) {
+            if (isLocked) {
                  const lockSize = Math.min(item.width * scale, item.height * scale) * 0.1;
                  ctx.font = `${lockSize}px sans-serif`;
                  ctx.fillText('🔒', 0, 0);
@@ -553,7 +603,7 @@
             }
         }
 
-        function draw(fontScale = 1) {
+        function draw(fontScale = 1, forceVibrant = false) {
             ctx.save();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#1a202c';
@@ -606,15 +656,42 @@
 
                 placedEquipment.forEach(item => {
                     if (equipmentData[item.type]) { 
-                        drawEquipment(item, fontScale);
+                        drawEquipment(item, fontScale, forceVibrant);
                     }
                 });
                 placedEquipment.forEach(item => {
                     if (item.type === 'group_label') {
-                        drawGroupLabel(item, fontScale);
+                        drawGroupLabel(item, fontScale, forceVibrant);
                     }
                 });
                 if (activeLayoutGroup) drawLayoutGroup(activeLayoutGroup, fontScale);
+
+                if (aiSuggestions.length > 0) {
+                    const spec = equipmentData[selectedEquipmentType];
+                    aiSuggestions.forEach((sugg, i) => {
+                        ctx.save();
+                        ctx.translate(sugg.x * scale, sugg.y * scale);
+                        
+                        ctx.globalAlpha = 0.7;
+                        ctx.fillStyle = spec.color;
+                        ctx.strokeStyle = '#fff';
+                        ctx.lineWidth = 3 / zoom;
+                        ctx.setLineDash([6 / zoom, 3 / zoom]);
+
+                        ctx.strokeRect(-spec.width * scale / 2, -spec.length * scale / 2, spec.width * scale, spec.length * scale);
+                        ctx.fillRect(-spec.width * scale / 2, -spec.length * scale / 2, spec.width * scale, spec.length * scale);
+                        
+                        ctx.globalAlpha = 1.0;
+                        ctx.fillStyle = 'white';
+                        const fontSize = 18 * fontScale / zoom;
+                        ctx.font = `bold ${fontSize}px Inter`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(`? ${i+1}`, 0, 0);
+
+                        ctx.restore();
+                    });
+                }
             }
             ctx.restore();
         }
@@ -829,6 +906,7 @@
             addExclusionZoneBtn.addEventListener('click', () => setMode('exclusion'));
             deleteZoneBtn.addEventListener('click', () => setMode('delete'));
             unlockGroupBtn.addEventListener('click', () => setMode('unlock'));
+            deleteSelectedBtn.addEventListener('click', handleDeleteSelected);
             
             createLayoutBtn.addEventListener('click', handleCreateLayout);
             placeLayoutBtn.addEventListener('click', handlePlaceLayout);
@@ -842,6 +920,8 @@
                 placedEquipment = [];
                 activeLayoutGroup = null;
                 exclusionZones = [];
+                nextEquipmentIndex = 1;
+                aiSuggestions = [];
                 aiResultsEl.classList.add('hidden');
                 draw();
             });
@@ -874,6 +954,8 @@
                         exclusionZones = [];
                         activeLayoutGroup = null;
                         selectedItem = null;
+                        nextEquipmentIndex = 1;
+                        aiSuggestions = [];
                         aiResultsEl.classList.add('hidden');
                         resetView();
                     };
@@ -912,7 +994,7 @@
         function setMode(mode) {
             currentMode = (currentMode === mode) ? null : mode;
             updateButtonStates();
-            draw(); // Redraw to show/hide unlock highlights
+            draw();
         }
 
         function updateButtonStates() {
@@ -940,6 +1022,36 @@
             const pos = getMousePos(e);
             const worldPos = screenToWorld(pos);
             
+            if (aiSuggestions.length > 0 && selectedEquipmentType) {
+                for (const sugg of aiSuggestions) {
+                    const spec = equipmentData[selectedEquipmentType];
+                    const suggRect = { x: sugg.x - spec.width/2, y: sugg.y - spec.length/2, width: spec.width, height: spec.length };
+                    if (isPointInRect(worldPos, suggRect)) {
+                        const count = parseInt(equipmentCountInput.value);
+                        if (count === 1) {
+                            const newItem = {
+                                id: Date.now() + Math.random(),
+                                type: selectedEquipmentType, name: spec.name,
+                                x: sugg.x, y: sugg.y, rotation: 0,
+                                realWidth: spec.width, realLength: spec.length,
+                                color: spec.color, isColliding: false, locked: false,
+                                groupId: null, index: nextEquipmentIndex++
+                            };
+                            placedEquipment.push(newItem);
+                        } else {
+                            // Create and place a group at the suggestion
+                            const tempGroup = createTemporaryGroup(count, selectedEquipmentType, sugg);
+                            placeTemporaryGroup(tempGroup);
+                        }
+                        
+                        aiSuggestions = [];
+                        aiResultsEl.classList.add('hidden');
+                        draw();
+                        return;
+                    }
+                }
+            }
+            
              if (currentMode === 'unlock') {
                 for (let i = placedEquipment.length - 1; i >= 0; i--) {
                     const item = placedEquipment[i];
@@ -951,10 +1063,10 @@
                             }
                         });
                         setMode(null);
-                        return; // Exit after unlocking
+                        return;
                     }
                 }
-                setMode(null); // Deselect if clicking empty space
+                setMode(null);
                 return;
             }
 
@@ -1140,16 +1252,57 @@
                 const deltaX = newX - selectedItem.x;
                 const deltaY = newY - selectedItem.y;
 
-                if (selectedItem.groupId) {
-                    placedEquipment.forEach(item => {
-                        if (item.groupId === selectedItem.groupId) {
-                            item.x += deltaX;
-                            item.y += deltaY;
+                const itemsToDrag = selectedItem.groupId 
+                    ? placedEquipment.filter(i => i.groupId === selectedItem.groupId)
+                    : (selectedItem === activeLayoutGroup ? [activeLayoutGroup] : [selectedItem]);
+
+                const draggedIds = new Set(itemsToDrag.map(i => i.id));
+                const staticItems = placedEquipment.filter(i => !draggedIds.has(i.id));
+                
+                let collisionDetected = false;
+
+                const tempMovedItems = itemsToDrag.map(item => ({ ...item, x: item.x + deltaX, y: item.y + deltaY }));
+                
+                for (const tempMovedItem of tempMovedItems) {
+                    if (tempMovedItem.type === 'group_label') continue;
+
+                    const useClearance = tempMovedItem.type !== 'group';
+                    const tempMovedItemRect = getRotatedBoundingBox(tempMovedItem, useClearance);
+                    
+                    for (const staticItem of staticItems) {
+                        if (staticItem.type === 'group_label' || staticItem.locked) continue;
+                        const staticItemRect = getRotatedBoundingBox(staticItem, true);
+                        if (rectsOverlap(tempMovedItemRect, staticItemRect)) {
+                            collisionDetected = true;
+                            break;
+                        }
+                    }
+                    if (collisionDetected) break;
+
+                    for (const zone of exclusionZones) {
+                        if (rectsOverlap(tempMovedItemRect, zone)) {
+                            collisionDetected = true;
+                            break;
+                        }
+                    }
+                    if (collisionDetected) break;
+                }
+
+                if (selectedItem === activeLayoutGroup) {
+                    activeLayoutGroup.isColliding = collisionDetected;
+                } else {
+                    itemsToDrag.forEach(item => {
+                        if (item.type !== 'group_label') {
+                            item.isColliding = collisionDetected;
                         }
                     });
-                } else {
-                     selectedItem.x = newX;
-                     selectedItem.y = newY;
+                }
+                
+                if (!collisionDetected) {
+                    itemsToDrag.forEach(item => {
+                        item.x += deltaX;
+                        item.y += deltaY;
+                    });
                 }
 
             } else if (zoneStartPoint) {
@@ -1215,19 +1368,38 @@
             }
         }
 
-        function handleKeyDown(e) {
-            if ((e.key === 'Delete' || e.key === 'Backspace') && selectedItem && !selectedItem.locked) {
-                const groupId = selectedItem.groupId;
-                
-                if (groupId) {
-                    placedEquipment = placedEquipment.filter(item => item.groupId !== groupId);
-                } else {
-                    placedEquipment = placedEquipment.filter(item => item.id !== selectedItem.id);
-                }
-                
+        function handleDeleteSelected() {
+            if (!selectedItem) {
+                showModal('Action Required', 'Please select an equipment block or group to delete.');
+                return;
+            }
+            if (selectedItem.locked) {
+                showModal('Action Failed', 'Cannot delete a locked group. Please unlock it first.');
+                return;
+            }
+            if (selectedItem === activeLayoutGroup) {
+                activeLayoutGroup = null;
                 selectedItem = null;
                 updateInfoBox(null);
                 draw();
+                return;
+            }
+            const groupId = selectedItem.groupId;
+            
+            if (groupId) {
+                placedEquipment = placedEquipment.filter(item => item.groupId !== groupId);
+            } else {
+                placedEquipment = placedEquipment.filter(item => item.id !== selectedItem.id);
+            }
+            
+            selectedItem = null;
+            updateInfoBox(null);
+            draw();
+        }
+
+        function handleKeyDown(e) {
+            if ((e.key === 'Delete' || e.key === 'Backspace') && selectedItem) {
+                handleDeleteSelected();
             }
         }
 
@@ -1269,6 +1441,75 @@
             draw();
         }
         
+        function createTemporaryGroup(count, type, center) {
+            const spec = equipmentData[type];
+            const slotWidth = spec.width + spec.clearances.left + spec.clearances.right;
+            const rowDepth = spec.length + spec.clearances.front + spec.clearances.back;
+            const cols = Math.ceil(Math.sqrt(count));
+            const rows = Math.ceil(count / cols);
+            const groupWidth = cols * slotWidth;
+            const groupHeight = rows * rowDepth;
+
+            const items = [];
+            let placedCount = 0;
+            for (let r = 0; r < rows && placedCount < count; r++) {
+                for (let c = 0; c < cols && placedCount < count; c++) {
+                    items.push({
+                        type: type,
+                        x: -groupWidth / 2 + slotWidth / 2 + c * slotWidth,
+                        y: -groupHeight / 2 + rowDepth / 2 + r * rowDepth,
+                        itemRotation: 0,
+                        isOverlapping: false,
+                    });
+                    placedCount++;
+                }
+            }
+            return {
+                id: Date.now(), type: 'group',
+                x: center.x, y: center.y,
+                rotation: 0, width: groupWidth, height: groupHeight,
+                items: items, isColliding: false
+            };
+        }
+
+        function placeTemporaryGroup(group) {
+            const groupAngle = group.rotation * Math.PI / 180;
+            const s = Math.sin(groupAngle), c = Math.cos(groupAngle);
+            const isGroup = group.items.length > 1;
+            const groupId = isGroup ? Date.now() : null;
+
+            group.items.forEach(item => {
+                const rotatedX = item.x * c - item.y * s;
+                const rotatedY = item.x * s + item.y * c;
+                
+                const spec = equipmentData[item.type];
+                const newItem = {
+                    id: Date.now() + Math.random(), type: item.type, name: spec.name,
+                    x: group.x + rotatedX, y: group.y + rotatedY,
+                    rotation: group.rotation + (item.itemRotation || 0),
+                    realWidth: spec.width, realLength: spec.length,
+                    color: spec.color, isColliding: false, locked: true,
+                    groupId: groupId, index: nextEquipmentIndex
+                };
+                if (!isGroup) {
+                    newItem.index = nextEquipmentIndex++;
+                }
+                placedEquipment.push(newItem);
+            });
+
+            if (isGroup) {
+                placedEquipment.push({
+                    id: groupId, type: 'group_label', groupId: groupId,
+                    name: equipmentData[group.items[0].type].name,
+                    x: group.x, y: group.y,
+                    rotation: group.rotation,
+                    width: group.width, height: group.height,
+                    locked: true, index: nextEquipmentIndex
+                });
+                nextEquipmentIndex++;
+            }
+        }
+
         function handleCreateLayout() {
             if (!selectedEquipmentType) {
                 showModal('Action Required', 'Please select an equipment type from the library first.');
@@ -1283,44 +1524,9 @@
                 showModal('Invalid Input', 'Please enter a number of units between 1 and 50.');
                 return;
             }
-
-            const spec = equipmentData[selectedEquipmentType];
-            const slotWidth = spec.width + spec.clearances.left + spec.clearances.right;
-            const rowDepth = spec.length + spec.clearances.front + spec.clearances.back;
-
-            const cols = Math.ceil(Math.sqrt(count));
-            const rows = Math.ceil(count / cols);
-
-            const groupWidth = cols * slotWidth;
-            const groupHeight = rows * rowDepth;
-
-            const items = [];
-            let placedCount = 0;
-            for (let r = 0; r < rows && placedCount < count; r++) {
-                for (let c = 0; c < cols && placedCount < count; c++) {
-                    items.push({
-                        type: selectedEquipmentType,
-                        x: -groupWidth / 2 + slotWidth / 2 + c * slotWidth,
-                        y: -groupHeight / 2 + rowDepth / 2 + r * rowDepth,
-                        itemRotation: 0,
-                        isOverlapping: false,
-                    });
-                    placedCount++;
-                }
-            }
             
             const centerOfView = screenToWorld({x: canvas.width/2, y: canvas.height/2});
-            activeLayoutGroup = {
-                id: Date.now(),
-                type: 'group',
-                x: centerOfView.x,
-                y: centerOfView.y,
-                rotation: 0,
-                width: groupWidth,
-                height: groupHeight,
-                items: items,
-                isColliding: false
-            };
+            activeLayoutGroup = createTemporaryGroup(count, selectedEquipmentType, centerOfView);
             
             zoom = 1;
             panOffset.x = canvas.width / 2 - activeLayoutGroup.x * scale * zoom;
@@ -1344,123 +1550,97 @@
                 return;
             }
 
-            const groupAngle = activeLayoutGroup.rotation * Math.PI / 180;
-            const s = Math.sin(groupAngle), c = Math.cos(groupAngle);
-            const isGroup = activeLayoutGroup.items.length > 1;
-            const groupId = isGroup ? Date.now() : null;
-
-            activeLayoutGroup.items.forEach(item => {
-                const rotatedX = item.x * c - item.y * s;
-                const rotatedY = item.x * s + item.y * c;
-                
-                const spec = equipmentData[item.type];
-                const newItem = {
-                    id: Date.now() + Math.random(), type: item.type, name: spec.name,
-                    x: activeLayoutGroup.x + rotatedX, y: activeLayoutGroup.y + rotatedY,
-                    rotation: activeLayoutGroup.rotation + (item.itemRotation || 0),
-                    realWidth: spec.width, realLength: spec.length,
-                    color: spec.color, isColliding: false, locked: true, // Lock on placement
-                    groupId: groupId
-                };
-                placedEquipment.push(newItem);
-            });
-
-            if (isGroup) {
-                placedEquipment.push({
-                    id: groupId, type: 'group_label', groupId: groupId,
-                    name: equipmentData[activeLayoutGroup.items[0].type].name,
-                    x: activeLayoutGroup.x, y: activeLayoutGroup.y,
-                    rotation: activeLayoutGroup.rotation,
-                    width: activeLayoutGroup.width, height: activeLayoutGroup.height,
-                    locked: true // Also lock the label
-                });
-            }
-
+            placeTemporaryGroup(activeLayoutGroup);
             activeLayoutGroup = null;
             draw();
         }
 
+        function imageToBase64(img) {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            return canvas.toDataURL('image/jpeg').split(',')[1];
+        }
+
         async function handleOptimize() {
-             if (!backgroundImage || scale <= 0) {
+            if (!backgroundImage || scale <= 0) {
                 showModal('Setup Required', 'Please upload a site image and set the scale before optimizing.');
                 return;
             }
-            
-            const apiKey = ""; // Placeholder for backend integration
-            if (!apiKey) {
-                 showModal('AI Feature Not Configured', 'The AI optimization feature is not currently enabled.');
-                 return;
+            if (!selectedEquipmentType) {
+                showModal('Equipment Required', 'Please select an equipment type from the library before optimizing.');
+                return;
             }
-
 
             loadingOverlay.classList.remove('hidden');
             aiResultsEl.classList.add('hidden');
+            aiSuggestions = [];
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-            
-            const siteDimensions = {
-                width: backgroundImage.width / scale,
-                height: backgroundImage.height / scale
+            const apiKey = "AIzaSyBFfDWL3I6Ei9EtIkkXw2Y9reU4vb_zyt0";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+            const spec = equipmentData[selectedEquipmentType];
+            const base64ImageData = imageToBase64(backgroundImage);
+            const count = parseInt(equipmentCountInput.value);
+
+            const prompt = `Analyze this aerial image of a well site. Your task is to identify the top ${count} most optimal locations to place a "${spec.name}".
+
+Constraints:
+1. The equipment dimensions are ${spec.width} feet wide by ${spec.length} feet long.
+2. The entire image area is ${Math.round(backgroundImage.width / scale)} ft wide by ${Math.round(backgroundImage.height / scale)} ft high. The origin (0,0) is the top-left corner.
+3. Find flat, open areas that are clear of existing equipment, vehicles, structures, and significant terrain obstructions.
+4. The placement should allow for access routes.
+5. Do not suggest locations within these existing exclusion zones (in feet, from top-left): ${JSON.stringify(exclusionZones)}.
+6. Do not suggest locations that overlap with already placed equipment here (in feet, from top-left): ${JSON.stringify(placedEquipment.filter(e => e.type !== 'group_label'))}.
+
+Required Output Format: A single, valid JSON array of objects. Each object must have "x", "y" (center coordinates in feet), and "rationale" (a very brief explanation, max 10 words). Example:
+[
+  {"x": 150.5, "y": 250.0, "rationale": "Large open space with clear access from the north."},
+  {"x": 300.0, "y": 400.2, "rationale": "Flat area near the main access road."}
+]
+`;
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                mimeType: "image/jpeg",
+                                data: base64ImageData
+                            }
+                        }
+                    ]
+                }]
             };
-
-            const equipmentToPlace = Object.values(equipmentData).map(spec => ({
-                type: Object.keys(equipmentData).find(key => equipmentData[key] === spec),
-                name: spec.name,
-                count: (selectedEquipmentType && equipmentData[selectedEquipmentType].name === spec.name) ? parseInt(equipmentCountInput.value) : 1,
-                width: spec.width,
-                length: spec.length,
-                clearances: spec.clearances
-            }));
-
-            const prompt = `You are an expert Well Site Logistics Planner. Your task is to create an optimal and safe layout for oil and gas equipment on a well site.
-
-                Constraints:
-                1.  **Site Dimensions (feet):** Area is ${siteDimensions.width.toFixed(0)} ft wide by ${siteDimensions.height.toFixed(0)} ft high. Origin (0,0) is top-left.
-                2.  **Equipment Specifications (feet):** Place the following, adhering to dimensions and clearance zones which cannot overlap.
-                    ${JSON.stringify(equipmentToPlace, null, 2)}
-                3.  **Restricted Zones (feet):**
-                    - **Exclusion Zones (No Equipment):** ${JSON.stringify(exclusionZones)}
-                4.  **Existing Layout:** Current placements are: ${JSON.stringify(placedEquipment.filter(e => e.type !== 'group_label').map(e => ({type: e.type, x: e.x, y: e.y, rotation: e.rotation})))}
-
-                **Goal:**
-                - Place all equipment within site bounds, respecting all zones and clearances.
-                - Maximize operational efficiency (e.g., blender near pumps).
-                - Keep the layout compact.
-
-                **Required Output Format:** A single JSON object with "layout" and "analysis" keys.
-                - "layout": an array of objects with "type", "x", "y", "rotation".
-                - "analysis": an object with "optimalityScore" (e.g., "95%") and a "rationale" (a very short summary under 25 words).`;
             
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) throw new Error(`API request failed: ${response.status}`);
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    throw new Error(`API request failed: ${response.status} - ${errorBody.error.message}`);
+                }
 
                 const result = await response.json();
                 const text = result.candidates[0].content.parts[0].text;
-                const cleanedText = text.replace(/```json/g, '').replace(/```/g, '');
-                const aiResponse = JSON.parse(cleanedText);
+                const cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                const suggestions = JSON.parse(cleanedText);
 
-                if (aiResponse.layout && aiResponse.analysis) {
-                    placedEquipment = aiResponse.layout.map(item => {
-                        const spec = equipmentData[item.type];
-                        return spec ? {
-                            id: Date.now() + Math.random(),
-                            type: item.type, name: spec.name, x: item.x, y: item.y, rotation: item.rotation,
-                            realWidth: spec.width, realLength: spec.length, color: spec.color, isColliding: false
-                        } : null;
-                    }).filter(Boolean);
-
-                    aiScoreEl.textContent = `Optimality Score: ${aiResponse.analysis.optimalityScore}`;
-                    aiRationaleEl.textContent = aiResponse.analysis.rationale;
+                if (Array.isArray(suggestions) && suggestions.length > 0) {
+                    aiSuggestions = suggestions;
                     aiResultsEl.classList.remove('hidden');
+                    aiScoreEl.textContent = `Found ${suggestions.length} optimal locations.`;
+                    aiRationaleEl.textContent = 'Click a suggestion on the map to place the equipment.';
                     draw();
                 } else {
-                    throw new Error("Invalid response format from AI.");
+                    throw new Error("AI did not return any valid suggestions.");
                 }
 
             } catch (error) {
@@ -1508,15 +1688,38 @@
             zoom = 1;
             panOffset = { x: 0, y: 0 };
             
-            const exportFontScale = Math.max(1, canvas.width / 1000); 
-            draw(exportFontScale);
+            const exportFontScale = Math.max(1.5, canvas.width / 800); 
+            draw(exportFontScale, true); // Force vibrant colors for export
 
             try {
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
                 const orientation = canvas.width > canvas.height ? 'l' : 'p';
                 const doc = new jsPDF({ orientation: orientation, unit: 'px', format: [canvas.width, canvas.height] });
                 
                 doc.addImage(dataUrl, 'JPEG', 0, 0, canvas.width, canvas.height);
+                
+                // Add legend page
+                const legendItems = placedEquipment.filter(item => item.index).sort((a,b) => a.index - b.index);
+                if (legendItems.length > 0) {
+                    doc.addPage();
+                    doc.setFontSize(20);
+                    doc.text("Equipment Index", 40, 60);
+                    
+                    let tableData = legendItems.map(item => [item.index, item.name]);
+                    // Remove duplicates for groups
+                    tableData = tableData.filter((item, index, self) => 
+                        index === self.findIndex((t) => (t[0] === item[0]))
+                    );
+
+                    doc.autoTable({
+                        startY: 80,
+                        head: [['#', 'Equipment Name']],
+                        body: tableData,
+                        theme: 'grid',
+                        styles: { fontSize: 14 }
+                    });
+                }
+
                 doc.save("well_site_layout.pdf");
 
             } catch (error) {
