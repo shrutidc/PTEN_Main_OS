@@ -65,7 +65,7 @@
         }
         .equipment-item.selected {
             background-color: #4a5568;
-            border-color: #ef4444;
+            border-color: #f33232;
             box-shadow: 0 0 0 2px #ef4444;
         }
     </style>
@@ -75,7 +75,7 @@
     <!-- Header -->
     <header class="bg-gray-900 border-b border-gray-700 p-4 flex justify-between items-center z-20 flex-shrink-0">
         <div class="flex items-center space-x-3">
-            <svg class="h-8 w-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <svg class="h-8 w-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
             </svg>
@@ -109,8 +109,8 @@
                     <div class="p-4 border-t border-gray-700 space-y-4">
                         <p class="text-sm text-gray-400">Upload a site plan. If you have a TIFF world file (.wld, .ftw), upload it to auto-set the scale.</p>
                         <div class="grid grid-cols-2 gap-2">
-                            <button id="uploadBtn" title="Upload Site Image" class="w-full text-sm bg-gray-700 text-white py-2 px-3 rounded-md hover:bg-gray-600 transition-all flex items-center justify-center space-x-2"> 📂 <span>Site Plan</span></button>
-                            <button id="uploadWorldFileBtn" title="Upload TIFF World File" class="w-full text-sm bg-gray-700 text-white py-2 px-3 rounded-md hover:bg-gray-600 transition-all flex items-center justify-center space-x-2"> 🌍 <span>TIFF World File</span></button>
+                            <button id="uploadBtn" title="Upload Site Image" class="w-full text-sm bg-gray-700 text-white py-2 px-3 rounded-md hover:bg-gray-600 transition-all flex items-center justify-center space-x-2">📂<span>Site Plan</span></button>
+                            <button id="uploadWorldFileBtn" title="Upload TIFF World File" class="w-full text-sm bg-gray-700 text-white py-2 px-3 rounded-md hover:bg-gray-600 transition-all flex items-center justify-center space-x-2">🌍<span>TIFF World File</span></button>
                         </div>
                         <input type="file" id="imageLoader" class="hidden" accept="image/*"/>
                         <input type="file" id="worldFileLoader" class="hidden" accept=".wld,.tfw,.jgw,.ftw"/>
@@ -125,7 +125,7 @@
                 <details class="sidebar-section bg-gray-800 rounded-lg border border-gray-700" open>
                      <summary class="p-3 font-semibold cursor-pointer">🏗️ 2. Equipment Library</summary>
                      <div id="equipment-library" class="p-4 border-t border-gray-700 space-y-2">
-                         <!-- Equipment will be dynamically added here -->
+                        <!-- Equipment will be dynamically added here -->
                     </div>
                 </details>
 
@@ -159,10 +159,10 @@
                              <button id="unlockGroupBtn" title="Select a locked group to unlock it" class="text-sm bg-indigo-600 text-white py-2 px-3 rounded-md hover:bg-indigo-500 transition-all flex items-center justify-center space-x-2">🔓<span>Unlock Group</span></button>
                              <button id="deleteSelectedBtn" title="Delete the selected equipment or group" class="text-sm bg-red-700 text-white py-2 px-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2">🗑️<span>Delete Selected</span></button>
                         </div>
-                        <button id="optimizeBtn" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-500 transition-all font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center space-x-2 mt-4"> 🧠 <span>AI Optimize Layout</span></button>
+                        <button id="optimizeBtn" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-500 transition-all font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center space-x-2 mt-4">🧠<span>AI Optimize Layout</span></button>
                     </div>
                      <div id="ai-results" class="text-sm hidden p-4 border-t border-gray-700">
-                         <h3 class="font-semibold mb-2 text-gray-100 flex items-center">
+                        <h3 class="font-semibold mb-2 text-gray-100 flex items-center">
                             <svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             AI Analysis
                         </h3>
@@ -399,6 +399,29 @@
                 ctx.restore(); 
             }
             
+            if (item.index) {
+                const circleRadius = 12 * fontScale / zoom;
+                const indexFontSize = 14 * fontScale / zoom;
+                
+                // Position in the top-left corner relative to the unrotated equipment
+                const xPos = -itemWidth / 2 + circleRadius;
+                const yPos = -itemLength / 2 + circleRadius;
+
+                ctx.beginPath();
+                ctx.arc(xPos, yPos, circleRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 1 / zoom;
+                ctx.stroke();
+
+                ctx.fillStyle = 'black';
+                ctx.font = `bold ${indexFontSize}px Inter`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.index, xPos, yPos);
+            }
+            
             if (isLocked) {
                  ctx.save();
                  ctx.rotate(Math.PI / 2);
@@ -472,6 +495,27 @@
             }
             ctx.restore();
 
+            if (item.index) {
+                const circleRadius = 14 * fontScale / zoom;
+                const indexFontSize = 16 * fontScale / zoom;
+                const xPos = 0;
+                const yPos = -item.height * scale / 2 - circleRadius - (5 / zoom);
+
+                ctx.beginPath();
+                ctx.arc(xPos, yPos, circleRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 1 / zoom;
+                ctx.stroke();
+
+                ctx.fillStyle = 'black';
+                ctx.font = `bold ${indexFontSize}px Inter`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.index, xPos, yPos);
+            }
+            
             if (isLocked) {
                  const lockSize = Math.min(item.width * scale, item.height * scale) * 0.1;
                  ctx.font = `${lockSize}px sans-serif`;
@@ -689,12 +733,12 @@
                 }
             }
              if (activeLayoutGroup) {
-                 activeLayoutGroup.isColliding = false;
-                 const groupRect = getRotatedBoundingBox(activeLayoutGroup);
-                 exclusionZones.forEach(zone => {
-                     if (rectsOverlap(groupRect, zone)) activeLayoutGroup.isColliding = true;
-                 });
-             }
+                activeLayoutGroup.isColliding = false;
+                const groupRect = getRotatedBoundingBox(activeLayoutGroup);
+                exclusionZones.forEach(zone => {
+                    if (rectsOverlap(groupRect, zone)) activeLayoutGroup.isColliding = true;
+                });
+            }
         }
 
         function getRotatedBoundingBox(item, useClearance = false) {
@@ -1032,7 +1076,7 @@
             }
             
              if (currentMode === 'unlock') {
-                 for (let i = placedEquipment.length - 1; i >= 0; i--) {
+                for (let i = placedEquipment.length - 1; i >= 0; i--) {
                     const item = placedEquipment[i];
                     if (item.locked && isPointInRotatedRect(worldPos, item)) {
                         const groupId = item.groupId;
@@ -1468,9 +1512,8 @@
                     rotation: group.rotation + (item.itemRotation || 0),
                     realWidth: spec.width, realLength: spec.length,
                     color: spec.color, isColliding: false, locked: true,
-                    groupId: groupId
+                    groupId: groupId, index: nextEquipmentIndex
                 };
-
                 if (!isGroup) {
                     newItem.index = nextEquipmentIndex++;
                 }
@@ -1484,8 +1527,9 @@
                     x: group.x, y: group.y,
                     rotation: group.rotation,
                     width: group.width, height: group.height,
-                    locked: true
+                    locked: true, index: nextEquipmentIndex
                 });
+                nextEquipmentIndex++;
             }
         }
 
@@ -1565,8 +1609,8 @@
             aiResultsEl.classList.add('hidden');
             aiSuggestions = [];
 
-            const apiKey = ""; // API key is managed by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const apiKey = "AIzaSyBFfDWL3I6Ei9EtIkkXw2Y9reU4vb_zyt0";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
             const count = parseInt(equipmentCountInput.value);
             const standardEquipment = ['blender', 'datavan', 'sand_equipment', 'wireline'];
@@ -1574,24 +1618,24 @@
                 acc[type] = 1;
                 return acc;
             }, {});
-            equipmentToRequest[selectedEquipmentType || 'frac_pump'] = count; // Default to frac_pump if none selected
+            equipmentToRequest[selectedEquipmentType || 'frac_pump'] = count;
             const equipmentListString = Object.entries(equipmentToRequest).map(([type, num]) => `${num} ${equipmentData[type].name}(s)`).join(', ');
 
 
             const prompt = `Analyze this aerial image of a well site. Your task is to create a complete, optimal, and logical layout for the following equipment: ${equipmentListString}.
 
 Operational Principles:
-1.  Frac Pumps should be arranged in a neat line ("the iron line").
-2.  The Blender must be positioned with clear access to the rear of the Frac Pumps.
-3.  The Datavan needs a clear, unobstructed line of sight to the wellhead area.
-4.  Sand Equipment requires significant open space and access for trucks.
-5.  All equipment must be placed with logical spacing for safety and operational flow.
+1. Frac Pumps should be arranged in a neat line ("the iron line").
+2. The Blender must be positioned with clear access to the rear of the Frac Pumps.
+3. The Datavan needs a clear, unobstructed line of sight to the wellhead area.
+4. Sand Equipment requires significant open space and access for trucks.
+5. All equipment must be placed with logical spacing for safety and operational flow.
 
 Constraints:
-1.  The entire image area is ${Math.round(backgroundImage.width / scale)} ft wide by ${Math.round(backgroundImage.height / scale)} ft high. The origin (0,0) is the top-left corner.
-2.  Adhere to these equipment dimensions (in feet): ${JSON.stringify(Object.entries(equipmentData).map(([k,v]) => ({type: k, width: v.width, length: v.length})))}.
-3.  Do not place any equipment within these existing exclusion zones (in feet, from top-left): ${JSON.stringify(exclusionZones)}.
-4.  Do not place any equipment where other items are already placed (in feet, from top-left): ${JSON.stringify(placedEquipment.filter(e => e.type !== 'group_label'))}.
+1. The entire image area is ${Math.round(backgroundImage.width / scale)} ft wide by ${Math.round(backgroundImage.height / scale)} ft high. The origin (0,0) is the top-left corner.
+2. Adhere to these equipment dimensions (in feet): ${JSON.stringify(Object.entries(equipmentData).map(([k,v]) => ({type: k, width: v.width, length: v.length})))}.
+3. Do not place any equipment within these existing exclusion zones (in feet, from top-left): ${JSON.stringify(exclusionZones)}.
+4. Do not place any equipment where other items are already placed (in feet, from top-left): ${JSON.stringify(placedEquipment.filter(e => e.type !== 'group_label'))}.
 
 Required Output Format: A single, valid JSON object with a "layout" key. "layout" must be an array of objects. Each object must have "type" (from the equipment list), "x" (center coordinate in feet), "y" (center coordinate in feet), and "rotation" (in degrees).
 `;
@@ -1635,30 +1679,64 @@ Required Output Format: A single, valid JSON object with a "layout" key. "layout
                     nextEquipmentIndex = 1;
                     
                     const mainEquipmentType = selectedEquipmentType || 'frac_pump';
-                    const mainItems = aiResponse.layout.filter(item => item.type === mainEquipmentType);
-                    const otherItems = aiResponse.layout.filter(item => item.type !== mainEquipmentType);
+                    const mainItemsFromAI = aiResponse.layout.filter(item => item.type === mainEquipmentType);
+                    const otherItemsFromAI = aiResponse.layout.filter(item => item.type !== mainEquipmentType);
 
-                    if (mainItems.length > 0) {
-                        const mainItemGroup = createTemporaryGroup(mainItems.length, mainEquipmentType, {x: 0, y: 0});
+                    if (mainItemsFromAI.length > 0) {
+                        const isGroup = mainItemsFromAI.length > 1;
+                        const groupId = isGroup ? Date.now() : null;
                         
-                        const avgX = mainItems.reduce((sum, p) => sum + p.x, 0) / mainItems.length;
-                        const avgY = mainItems.reduce((sum, p) => sum + p.y, 0) / mainItems.length;
-                        mainItemGroup.x = avgX;
-                        mainItemGroup.y = avgY;
-                        
-                        placeTemporaryGroup(mainItemGroup);
-                        
-                        otherItems.forEach(item => {
+                        mainItemsFromAI.forEach(item => {
                             const spec = equipmentData[item.type];
-                             placedEquipment.push({
-                                 id: Date.now() + Math.random(), type: item.type, name: spec.name,
-                                 x: item.x, y: item.y, rotation: item.rotation,
-                                 realWidth: spec.width, realLength: spec.length,
-                                 color: spec.color, isColliding: false, locked: true,
-                                 groupId: null, index: nextEquipmentIndex++
-                             });
+                            placedEquipment.push({
+                                id: Date.now() + Math.random(), type: item.type, name: spec.name,
+                                x: item.x, y: item.y, rotation: item.rotation,
+                                realWidth: spec.width, realLength: spec.length,
+                                color: spec.color, isColliding: false, locked: true,
+                                groupId: groupId, index: isGroup ? nextEquipmentIndex : nextEquipmentIndex++
+                            });
                         });
+
+                        if (isGroup) {
+                            const groupPoints = mainItemsFromAI.map(item => {
+                                const rect = getRotatedBoundingBox(item);
+                                return [
+                                    {x: rect.x, y: rect.y},
+                                    {x: rect.x + rect.width, y: rect.y},
+                                    {x: rect.x, y: rect.y + rect.height},
+                                    {x: rect.x + rect.width, y: rect.y + rect.height}
+                                ];
+                            }).flat();
+                            
+                            const minX = Math.min(...groupPoints.map(p => p.x));
+                            const maxX = Math.max(...groupPoints.map(p => p.x));
+                            const minY = Math.min(...groupPoints.map(p => p.y));
+                            const maxY = Math.max(...groupPoints.map(p => p.y));
+
+                            placedEquipment.push({
+                                id: groupId, type: 'group_label', groupId: groupId,
+                                name: equipmentData[mainEquipmentType].name,
+                                x: (minX + maxX) / 2, y: (minY + maxY) / 2,
+                                rotation: 0, 
+                                width: maxX - minX, height: maxY - minY,
+                                locked: true, index: nextEquipmentIndex
+                            });
+                            nextEquipmentIndex++;
+                        }
                     }
+
+                    otherItemsFromAI.forEach(item => {
+                        const spec = equipmentData[item.type];
+                        if (spec) {
+                            placedEquipment.push({
+                                id: Date.now() + Math.random(), type: item.type, name: spec.name,
+                                x: item.x, y: item.y, rotation: item.rotation,
+                                realWidth: spec.width, realLength: spec.length,
+                                color: spec.color, isColliding: false, locked: true,
+                                groupId: null, index: nextEquipmentIndex++
+                            });
+                        }
+                    });
 
                     aiResultsEl.classList.remove('hidden');
                     aiScoreEl.textContent = `AI layout generated and placed.`;
