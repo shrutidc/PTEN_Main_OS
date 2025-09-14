@@ -13,7 +13,7 @@
             overscroll-behavior: none;
         }
         .loader {
-            border: 5px solid #10274f; /* gray-700 */
+            border: 5px solid #4a5568; /* gray-700 */
             border-top: 5px solid #e53e3e; /* red-600 */
             border-radius: 50%;
             width: 50px;
@@ -46,7 +46,7 @@
             overflow: auto; background-color: rgba(0,0,0,0.6);
         }
         .modal-content {
-            background-color: #343c4b;
+            background-color: #2d3748;
             color: #e2e8f0;
             margin: 15% auto; padding: 24px; border: 1px solid #4a5568;
             width: 90%; max-width: 500px;
@@ -124,8 +124,8 @@
                 <details class="sidebar-section bg-gray-800 rounded-lg border border-gray-700" open>
                      <summary class="p-3 font-semibold cursor-pointer">🏗️ 2. Equipment Library</summary>
                      <div id="equipment-library" class="p-4 border-t border-gray-700 space-y-2">
-                        <!-- Equipment will be dynamically added here -->
-                    </div>
+                         <!-- Equipment will be dynamically added here -->
+                     </div>
                 </details>
 
                 <!-- 3. Equipment Layout -->
@@ -140,8 +140,10 @@
                             <input type="number" id="equipmentCount" value="1" min="1" max="50" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm text-white">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <button id="createLayoutBtn" title="Create a movable group of the selected equipment" class="text-sm bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500 transition-all flex items-center justify-center space-x-2">📦<span>Create Group</span></button>
-                            <button id="placeLayoutBtn" title="Place the equipment group onto the canvas" class="text-sm bg-green-600 text-white py-2 px-3 rounded-md hover:bg-green-500 transition-all flex items-center justify-center space-x-2">✅<span>Place Group</span></button>
+                            <button id="createLayoutBtn" title="Create a movable group of the selected equipment" class="text-sm bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500 transition-all flex items-center justify-center space-x-2">📦<span>Create</span></button>
+                            <button id="placeLayoutBtn" title="Place the equipment group onto the canvas" class="text-sm bg-green-600 text-white py-2 px-3 rounded-md hover:bg-green-500 transition-all flex items-center justify-center space-x-2">✅<span>Place</span></button>
+                            <button id="ungroupBtn" title="Ungroup the selected equipment set" class="text-sm bg-purple-600 text-white py-2 px-3 rounded-md hover:bg-purple-500 transition-all flex items-center justify-center space-x-2">🔓<span>Ungroup</span></button>
+                            <button id="deleteGroupBtn" title="Delete the selected equipment group" class="text-sm bg-red-700 text-white py-2 px-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2">🗑️<span>Delete</span></button>
                         </div>
                     </div>
                 </details>
@@ -150,20 +152,17 @@
                 <details class="sidebar-section bg-gray-800 rounded-lg border border-gray-700" open>
                     <summary class="p-3 font-semibold cursor-pointer">✨ 4. AI & Advanced Tools</summary>
                      <div class="p-4 border-t border-gray-700 space-y-4">
-                         <div class="grid grid-cols-2 gap-3">
-                            <button id="addExclusionZoneBtn" title="Draw Areas to Avoid" class="text-sm bg-yellow-600 text-white py-2 px-3 rounded-md hover:bg-yellow-500 transition-all flex items-center justify-center space-x-2">🚫<span>Exclusion Zone</span></button>
-                            <button id="deleteZoneBtn" title="Select a zone to delete" class="text-sm bg-gray-700 text-white py-2 px-3 rounded-md hover:bg-gray-600 transition-all flex items-center justify-center space-x-2">🗑️<span>Delete Zone</span></button>
-                        </div>
+                        <button id="addExclusionZoneBtn" title="Draw Areas to Avoid" class="w-full text-sm bg-yellow-600 text-white py-2 px-3 rounded-md hover:bg-yellow-500 transition-all flex items-center justify-center space-x-2">🚫<span>Exclusion Zone</span></button>
                         <button id="optimizeBtn" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-500 transition-all font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center space-x-2 mt-4">🧠<span>AI Optimize Layout</span></button>
                     </div>
                      <div id="ai-results" class="text-sm hidden p-4 border-t border-gray-700">
-                        <h3 class="font-semibold mb-2 text-gray-100 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            AI Analysis
-                        </h3>
-                        <p id="ai-score" class="font-bold text-green-400 mb-1"></p>
-                        <p id="ai-rationale" class="text-gray-400 text-xs"></p>
-                    </div>
+                         <h3 class="font-semibold mb-2 text-gray-100 flex items-center">
+                             <svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                             AI Analysis
+                         </h3>
+                         <p id="ai-score" class="font-bold text-green-400 mb-1"></p>
+                         <p id="ai-rationale" class="text-gray-400 text-xs"></p>
+                     </div>
                 </details>
             </div>
             
@@ -172,7 +171,6 @@
                     <button id="exportCsvBtn" title="Export layout as CSV" class="w-full text-sm bg-gray-700 text-gray-200 py-2 px-3 rounded-md hover:bg-gray-600 transition-all flex items-center justify-center space-x-2">📄<span>Export CSV</span></button>
                     <button id="exportPdfBtn" title="Export layout as PDF" class="w-full text-sm bg-gray-700 text-gray-200 py-2 px-3 rounded-md hover:bg-gray-600 transition-all flex items-center justify-center space-x-2">🖼️<span>Export PDF</span></button>
                 </div>
-                 <button id="clearCanvasBtn" title="Remove all equipment from the canvas" class="w-full text-sm bg-gray-700 text-gray-200 py-2 px-4 rounded-md hover:bg-red-600 hover:text-white transition-all flex items-center justify-center space-x-2">❌<span>Clear Canvas</span></button>
             </div>
         </aside>
 
@@ -222,7 +220,6 @@
         const optimizeBtn = document.getElementById('optimizeBtn');
         const equipmentCountInput = document.getElementById('equipmentCount');
         const equipmentLibraryEl = document.getElementById('equipment-library');
-        const clearCanvasBtn = document.getElementById('clearCanvasBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
         
         const infoBox = document.getElementById('infoBox');
@@ -238,9 +235,10 @@
         const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 
         const addExclusionZoneBtn = document.getElementById('addExclusionZoneBtn');
-        const deleteZoneBtn = document.getElementById('deleteZoneBtn');
         const createLayoutBtn = document.getElementById('createLayoutBtn');
         const placeLayoutBtn = document.getElementById('placeLayoutBtn');
+        const ungroupBtn = document.getElementById('ungroupBtn');
+        const deleteGroupBtn = document.getElementById('deleteGroupBtn');
         const exportCsvBtn = document.getElementById('exportCsvBtn');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
 
@@ -269,29 +267,25 @@
         let selectedItem = null;
         let isDragging = false;
         let isRotating = false;
-        let isResizing = false;
-        let activeResizeHandle = null;
         let dragOffsetX, dragOffsetY;
 
         let zoom = 1;
         let panOffset = { x: 0, y: 0 };
 
-        let currentMode = null; // 'exclusion', 'delete'
+        let currentMode = null; // 'exclusion'
         let zoneStartPoint = null;
         let tempZone = null;
         let selectedEquipmentType = null;
         let infoBoxTimeout = null;
-        let draggingSubItem = null;
-        let subItemDragOffsetX, subItemDragOffsetY;
         
         const equipmentData = {
-            'frac_pump': { name: 'Frac Pump', emoji: '⛽', width: 8.5, length: 45, color: '#3b82f6', clearances: { front: 1, back: 1, left: 1, right: 1 } },
-            'blender': { name: 'Blender', emoji: '🔄', width: 8.5, length: 40, color: '#10b981', clearances: { front: 10, back: 0, left: 5, right: 5 } },
-            'chemical_skid': { name: 'Chemical Skid', emoji: '🧪', width: 8.5, length: 20, color: '#f43f5e', clearances: { front: 5, back: 5, left: 5, right: 5 } },
-            'manifold': { name: 'Manifold', emoji: '🔗', width: 8.5, length: 35, color: '#a855f7', clearances: { front: 5, back: 5, left: 10, right: 10 } },
-            'sand_equipment': { name: 'Sand Equipment', emoji: '⏳', width: 20.2, length: 20.2, color: '#f97316', clearances: { front: 15, back: 15, left: 15, right: 15 } },
-            'wireline': { name: 'Wireline', emoji: '📡', width: 8.5, length: 28, color: '#8b5cf6', clearances: { front: 10, back: 25, left: 10, right: 10 } },
-            'datavan': { name: 'Datavan', emoji: '💻', width: 8.5, length: 40, color: '#6b7280', clearances: { front: 10, back: 10, left: 10, right: 10 } },
+            'frac_pump': { name: 'Frac Pump', emoji: '⛽', width: 8.5, length: 49, color: '#3b82f6', clearances: { front: 1, back: 1, left: 1, right: 1 } },
+            'blender': { name: 'Blender', emoji: '🔄', width: 8.5, length: 44, color: '#10b981', clearances: { front: 10, back: 0, left: 5, right: 5 } },
+            'chemical_skid': { name: 'Chemical Skid', emoji: '🧪', width: 8.5, length: 26, color: '#f43f5e', clearances: { front: 5, back: 5, left: 5, right: 5 } },
+            'manifold': { name: 'Manifold', emoji: '🔗', width: 8.5, length: 41.5, color: '#a855f7', clearances: { front: 5, back: 5, left: 10, right: 10 } },
+            'sand_equipment': { name: 'Sand Equipment', emoji: '⏳', width: 8.5, length: 50.5, color: '#f97316', clearances: { front: 15, back: 10, left: 1, right: 1 } },
+            'wireline': { name: 'Wireline', emoji: '📡', width: 8.5, length: 32, color: '#8b5cf6', clearances: { front: 10, back: 25, left: 10, right: 10 } },
+            'datavan': { name: 'Datavan', emoji: '💻', width: 8.5, length: 46.5, color: '#6b7280', clearances: { front: 10, back: 10, left: 10, right: 10 } },
         };
         
         // --- CORE DRAWING AND UTILITY FUNCTIONS ---
@@ -305,13 +299,6 @@
                 y: worldPixelY / scale
             };
         }
-        
-        function worldToScreen(pos) {
-             if (scale <= 0) return { x: 0, y: 0 };
-             const screenX = pos.x * scale * zoom + panOffset.x;
-             const screenY = pos.y * scale * zoom + panOffset.y;
-             return { x: screenX, y: screenY };
-        }
 
         function drawEquipment(item) {
             ctx.save();
@@ -319,26 +306,20 @@
             ctx.rotate(item.rotation * Math.PI / 180);
             
             const spec = equipmentData[item.type];
-            let itemWidth, itemLength;
-            if (item.realWidth && item.realLength) {
-                itemWidth = item.realWidth * scale;
-                itemLength = item.realLength * scale;
-            } else {
-                itemWidth = spec.width * scale;
-                itemLength = spec.length * scale;
-            }
+            const itemWidth = spec.width * scale;
+            const itemLength = spec.length * scale;
 
-            if (selectedItem && selectedItem.id === item.id) {
+            const isGroupSelected = selectedItem && selectedItem.groupId && selectedItem.groupId === item.groupId;
+
+            if ((selectedItem && selectedItem.id === item.id) || isGroupSelected) {
                 const haloPadding = 10 / zoom;
                 ctx.fillStyle = 'rgba(252, 211, 77, 0.5)';
-                ctx.fillRect( -itemWidth / 2 - haloPadding, -itemLength / 2 - haloPadding, itemWidth + haloPadding * 2, itemLength + haloPadding * 2 );
-                
-                // Draw selection handles
-                ctx.restore(); // Restore to draw handles in world space
-                drawSelectionHandles(item);
-                ctx.save(); // Re-save for the rest of the drawing
-                ctx.translate(item.x * scale, item.y * scale);
-                ctx.rotate(item.rotation * Math.PI / 180);
+                ctx.fillRect(
+                    -itemWidth / 2 - haloPadding,
+                    -itemLength / 2 - haloPadding,
+                    itemWidth + haloPadding * 2,
+                    itemLength + haloPadding * 2
+                );
             }
             
             ctx.strokeStyle = item.isColliding ? '#ef4444' : '#a0aec0';
@@ -356,7 +337,7 @@
             ctx.globalAlpha = item.isColliding ? 0.7 : 1.0;
             ctx.fillRect(-itemWidth / 2, -itemLength / 2, itemWidth, itemLength);
             
-            if (selectedItem && selectedItem.id === item.id) {
+            if ((selectedItem && selectedItem.id === item.id) || isGroupSelected) {
                 ctx.strokeStyle = '#e53e3e';
                 ctx.lineWidth = 3 / zoom;
                 ctx.strokeRect(-itemWidth / 2, -itemLength / 2, itemWidth, itemLength);
@@ -377,55 +358,27 @@
                 ctx.textBaseline = 'middle';
 
                 const text = item.name;
-                const maxLength = itemLength * 0.9;
+                const maxLength = itemLength * 0.9; // The available "width" is now the item's length
 
+                // Only draw text if the equipment is large enough on screen
                 if (itemLength * zoom > 20) {
-                    if (ctx.measureText(text).width > maxLength && text.includes(' ')) {
+                     if (ctx.measureText(text).width > maxLength && text.includes(' ')) {
+                        // Split text into two lines if it's too wide
                         const words = text.split(' ');
                         const line1 = words[0];
                         const line2 = words.slice(1).join(' ');
                         ctx.fillText(line1, 0, -fontSize * 0.6);
                         ctx.fillText(line2, 0, fontSize * 0.6);
                     } else {
+                        // Draw in a single line
                         ctx.fillText(text, 0, 0);
                     }
                 }
                 
-                ctx.restore(); 
+                ctx.restore(); // Restore the text rotation
             }
 
             ctx.restore();
-        }
-        
-        function drawSelectionHandles(item) {
-            const handles = getItemHandles(item);
-            const isGroup = item.type === 'group';
-
-            // Draw line for rotation handle (always visible)
-            ctx.beginPath();
-            const center = worldToScreen({x: item.x, y: item.y});
-            const rotHandle = worldToScreen(handles.rotate);
-            ctx.moveTo(center.x, center.y);
-            ctx.lineTo(rotHandle.x, rotHandle.y);
-            ctx.strokeStyle = 'rgba(252, 211, 77, 0.8)';
-            ctx.lineWidth = 2 / zoom;
-            ctx.stroke();
-
-            // Draw handles
-            Object.entries(handles).forEach(([key, handle]) => {
-                // Only draw corner handles for groups
-                if (!isGroup && key !== 'rotate') {
-                    return;
-                }
-                const screenPos = worldToScreen(handle);
-                ctx.beginPath();
-                ctx.arc(screenPos.x, screenPos.y, 6 / zoom, 0, 2 * Math.PI);
-                ctx.fillStyle = '#facc15'; // yellow-400
-                ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2 / zoom;
-                ctx.stroke();
-            });
         }
 
         function drawGroupLabel(item) {
@@ -435,18 +388,20 @@
             
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
 
+            // Rotate the context just for the text to make it vertical
             ctx.save();
             ctx.rotate(Math.PI / 2);
 
-            const baseFontSize = 18;
+            const baseFontSize = 18; // Larger font for groups
             const fontSize = baseFontSize / zoom;
             ctx.font = `bold ${fontSize}px Inter`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
             const text = item.name;
-            const maxLength = item.height * scale * 0.9;
+            const maxLength = item.height * scale * 0.9; // Group height is its length
 
+            // Only draw if it's a reasonable size on screen
             if (item.height * scale * zoom > 30) {
                  if (ctx.measureText(text).width > maxLength && text.includes(' ')) {
                     const words = text.split(' ');
@@ -459,9 +414,10 @@
                 }
             }
             
-            ctx.restore();
+            ctx.restore(); // Restore the text rotation
             ctx.restore();
         }
+
 
         function drawLayoutGroup(group) {
             ctx.save();
@@ -471,50 +427,10 @@
             group.items.forEach(item => {
                 ctx.save();
                 ctx.translate(item.x * scale, item.y * scale);
-                
-                // Apply individual item rotation for packing
-                if (item.itemRotation) {
-                    ctx.rotate(item.itemRotation * Math.PI / 180);
-                }
-
                 const spec = equipmentData[item.type];
-                const itemWidth = spec.width * scale;
-                const itemLength = spec.length * scale;
-
                 ctx.fillStyle = spec.color;
-                ctx.globalAlpha = group.isColliding ? 0.5 : (item.isOutside ? 0.4 : 1.0);
-                ctx.fillRect(-itemWidth / 2, -itemLength / 2, itemWidth, itemLength);
-
-                if (item.isOverlapping) {
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-                    ctx.fillRect(-itemWidth / 2, -itemLength / 2, itemWidth, itemLength);
-                }
-                
-                // Draw text for sub-item
-                ctx.globalAlpha = item.isOutside ? 0.6 : 1.0;
-                ctx.fillStyle = 'white';
-                ctx.rotate(Math.PI / 2); // Rotate for vertical text relative to its container
-
-                const baseFontSize = 10;
-                const fontSize = baseFontSize / zoom;
-                ctx.font = `bold ${fontSize}px Inter`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                const text = spec.name;
-                const maxLength = itemLength * 0.9;
-
-                if (itemLength * zoom > 20) {
-                    if (ctx.measureText(text).width > maxLength && text.includes(' ')) {
-                        const words = text.split(' ');
-                        const line1 = words[0];
-                        const line2 = words.slice(1).join(' ');
-                        ctx.fillText(line1, 0, -fontSize * 0.6);
-                        ctx.fillText(line2, 0, fontSize * 0.6);
-                    } else {
-                        ctx.fillText(text, 0, 0);
-                    }
-                }
+                ctx.globalAlpha = group.isColliding ? 0.5 : 1.0;
+                ctx.fillRect(-spec.width * scale / 2, -spec.length * scale / 2, spec.width * scale, spec.length * scale);
                 ctx.restore();
             });
             
@@ -531,15 +447,17 @@
                 ctx.textAlign = 'center';
                 ctx.fillText('SAFETY EXCLUSION ZONE!', 0, group.height * scale / 2 + 20 / zoom);
             }
+
+            const handlePos = getRotationHandlePos(group, false);
+            ctx.beginPath();
+            ctx.arc(handlePos.x * scale, handlePos.y * scale, 8 / zoom, 0, 2 * Math.PI);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fill();
             
             ctx.restore();
-            
-            if (isSelected) {
-                drawSelectionHandles(group);
-            }
         }
 
-        function draw(fontScale = 1) {
+        function draw() {
             ctx.save();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#1a202c';
@@ -569,7 +487,7 @@
                     ctx.fillRect(zone.x * scale, zone.y * scale, zone.width * scale, zone.height * scale);
                     ctx.strokeRect(zone.x * scale, zone.y * scale, zone.width * scale, zone.height * scale);
                     ctx.fillStyle = '#fff';
-                    ctx.font = `bold ${12 * fontScale / zoom}px Inter`;
+                    ctx.font = `bold ${12 / zoom}px Inter`;
                     ctx.textAlign = 'center';
                     ctx.fillText('EXCLUSION ZONE', zone.x * scale + zone.width * scale / 2, zone.y * scale + zone.height * scale / 2);
                 });
@@ -591,16 +509,17 @@
                 }
 
                 placedEquipment.forEach(item => {
-                    if (equipmentData[item.type]) { 
-                        drawEquipment(item, fontScale);
+                    if (equipmentData[item.type]) { // check if it's a valid equipment
+                        drawEquipment(item);
                     }
                 });
+                // Draw labels on top of all equipment
                 placedEquipment.forEach(item => {
                     if (item.type === 'group_label') {
-                        drawGroupLabel(item, fontScale);
+                        drawGroupLabel(item);
                     }
                 });
-                if (activeLayoutGroup) drawLayoutGroup(activeLayoutGroup, fontScale);
+                if (activeLayoutGroup) drawLayoutGroup(activeLayoutGroup);
             }
             ctx.restore();
         }
@@ -621,6 +540,8 @@
                 for (let j = i + 1; j < placedEquipment.length; j++) {
                     const item2 = placedEquipment[j];
                     if (item2.type === 'group_label') continue;
+                    // Don't check items in the same group against each other
+                    if (item1.groupId && item1.groupId === item2.groupId) continue;
 
                     if (rectsOverlap(rect1, getRotatedBoundingBox(item2, true))) {
                         item1.isColliding = true;
@@ -639,40 +560,16 @@
 
         function getRotatedBoundingBox(item, useClearance = false) {
             let w, h;
-            if (item.type === 'group') {
+            if (item.type === 'group' || item.type === 'group_label') {
                 w = item.width; h = item.height;
             } else {
                 const spec = equipmentData[item.type];
-                w = useClearance ? spec.width + spec.clearances.left + spec.clearances.right : (item.realWidth || spec.width);
-                h = useClearance ? spec.length + spec.clearances.front + spec.clearances.back : (item.realLength || spec.length);
+                w = useClearance ? spec.width + spec.clearances.left + spec.clearances.right : spec.width;
+                h = useClearance ? spec.length + spec.clearances.front + spec.clearances.back : spec.length;
             }
             const angle = item.rotation * Math.PI / 180, sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
             const newWidth = h * sin + w * cos, newHeight = h * cos + w * sin;
             return { x: item.x - newWidth / 2, y: item.y - newHeight / 2, width: newWidth, height: newHeight };
-        }
-        
-        function getItemHandles(item) {
-            const w = item.realWidth || (item.type === 'group' ? item.width : equipmentData[item.type].width);
-            const h = item.realLength || (item.type === 'group' ? item.height : equipmentData[item.type].length);
-            const angle = item.rotation * Math.PI / 180;
-            const s = Math.sin(angle), c = Math.cos(angle);
-            const hW = w / 2, hH = h / 2;
-
-            const rotateHandleDist = hH + 20 / scale;
-
-            const handles = {
-                tl: {x: -hW, y: -hH}, tr: {x: hW, y: -hH},
-                bl: {x: -hW, y: hH}, br: {x: hW, y: hH},
-                rotate: {x: 0, y: -rotateHandleDist}
-            };
-            
-            for (const key in handles) {
-                const p = handles[key];
-                const rotatedX = p.x * c - p.y * s;
-                const rotatedY = p.x * s + p.y * c;
-                handles[key] = { x: item.x + rotatedX, y: item.y + rotatedY };
-            }
-            return handles;
         }
 
         function rectsOverlap(r1, r2) {
@@ -680,7 +577,13 @@
         }
 
         function getRotationHandlePos(item, absolute = true) {
-            let h = item.realLength || (item.type === 'group' ? item.height : equipmentData[item.type].length);
+            let h;
+            if (item.type === 'group' || item.type === 'group_label') {
+                h = item.height;
+            } else {
+                const spec = equipmentData[item.type];
+                h = spec.length;
+            }
             const angle = (item.rotation - 90) * Math.PI / 180;
             const handleDistance = (h / 2) + (20 / (scale * zoom));
             const x = Math.cos(angle) * handleDistance;
@@ -698,9 +601,7 @@
             
             infoBox.classList.remove('hidden');
             infoName.textContent = item.name;
-            const w = item.realWidth || equipmentData[item.type].width;
-            const l = item.realLength || equipmentData[item.type].length;
-            infoSize.textContent = `${w.toFixed(1)} x ${l.toFixed(1)}`;
+            infoSize.textContent = `${item.realWidth} x ${item.realLength}`;
             infoRotation.textContent = `${(item.rotation % 360).toFixed(1)}°`;
             infoStatus.innerHTML = item.isColliding ? 
                 '<span class="font-bold text-red-400">Interference!</span>' : 
@@ -734,8 +635,7 @@
                 w = item.width; h = item.height;
             } else {
                 const spec = equipmentData[item.type];
-                w = item.realWidth || spec.width;
-                h = item.realLength || spec.length;
+                w = spec.width; h = spec.length;
             }
             return Math.abs(rotatedX) < w / 2 && Math.abs(rotatedY) < h / 2;
         }
@@ -812,23 +712,16 @@
             document.addEventListener('keydown', handleKeyDown);
 
             addExclusionZoneBtn.addEventListener('click', () => setMode('exclusion'));
-            deleteZoneBtn.addEventListener('click', () => setMode('delete'));
             
             createLayoutBtn.addEventListener('click', handleCreateLayout);
             placeLayoutBtn.addEventListener('click', handlePlaceLayout);
+            ungroupBtn.addEventListener('click', handleUngroup);
+            deleteGroupBtn.addEventListener('click', handleDeleteGroup);
             
             canvas.addEventListener('mousedown', handleMouseDown);
             canvas.addEventListener('mousemove', handleMouseMove);
             canvas.addEventListener('mouseup', handleMouseUp);
             canvas.addEventListener('mouseleave', handleMouseUp);
-            
-            clearCanvasBtn.addEventListener('click', () => {
-                placedEquipment = [];
-                activeLayoutGroup = null;
-                exclusionZones = [];
-                aiResultsEl.classList.add('hidden');
-                draw();
-            });
             
             optimizeBtn.addEventListener('click', handleOptimize);
             exportCsvBtn.addEventListener('click', handleExportCSV);
@@ -899,13 +792,10 @@
         }
 
         function updateButtonStates() {
-            [addExclusionZoneBtn, deleteZoneBtn].forEach(btn => btn.classList.remove('ring-2', 'ring-red-500'));
+            addExclusionZoneBtn.classList.remove('ring-2', 'ring-red-500');
             if (currentMode === 'exclusion') {
                 addExclusionZoneBtn.classList.add('ring-2', 'ring-red-500');
                 canvas.style.cursor = 'cell';
-            } else if (currentMode === 'delete') {
-                deleteZoneBtn.classList.add('ring-2', 'ring-red-500');
-                canvas.style.cursor = 'pointer';
             } else {
                  canvas.style.cursor = 'crosshair';
             }
@@ -920,18 +810,6 @@
             const pos = getMousePos(e);
             const worldPos = screenToWorld(pos);
             
-            if (currentMode === 'delete') {
-                for (let i = exclusionZones.length - 1; i >= 0; i--) {
-                    if (isPointInRect(worldPos, exclusionZones[i])) {
-                        exclusionZones.splice(i, 1);
-                        draw();
-                        return;
-                    }
-                }
-                setMode(null);
-                return;
-            }
-
             if (currentMode === 'exclusion') {
                 zoneStartPoint = worldPos;
                 tempZone = { start: worldPos, end: worldPos };
@@ -939,44 +817,15 @@
             }
             
             let newlySelectedItem = null;
-            isDragging = isRotating = isResizing = false;
-            draggingSubItem = null; 
-
-            if (selectedItem) {
-                const handles = getItemHandles(selectedItem);
-                const handleRadius = 8 / (zoom * scale);
-                for (const key in handles) {
-                    if (Math.hypot(worldPos.x - handles[key].x, worldPos.y - handles[key].y) < handleRadius) {
-                        if (key === 'rotate') {
-                            isRotating = true;
-                        } else if (selectedItem.type === 'group') { // Only allow resizing for groups
-                            isResizing = true;
-                            activeResizeHandle = key;
-                        }
-                        return; // Found handle, exit early
-                    }
-                }
-            }
+            isDragging = false;
+            isRotating = false;
 
             if (activeLayoutGroup && isPointInRotatedRect(worldPos, activeLayoutGroup)) {
                 newlySelectedItem = activeLayoutGroup;
-                const groupAngle = -activeLayoutGroup.rotation * Math.PI / 180;
-                const s = Math.sin(groupAngle), c = Math.cos(groupAngle);
-                const localX = (worldPos.x - activeLayoutGroup.x) * c - (worldPos.y - activeLayoutGroup.y) * s;
-                const localY = (worldPos.x - activeLayoutGroup.x) * s + (worldPos.y - activeLayoutGroup.y) * c;
-
-                for (let i = activeLayoutGroup.items.length - 1; i >= 0; i--) {
-                    const subItem = activeLayoutGroup.items[i];
-                    const spec = equipmentData[subItem.type];
-                    if (Math.abs(localX - subItem.x) < spec.width / 2 && Math.abs(localY - subItem.y) < spec.length / 2) {
-                        draggingSubItem = subItem;
-                        subItemDragOffsetX = localX - subItem.x;
-                        subItemDragOffsetY = localY - subItem.y;
-                        break; 
-                    }
-                }
-
-                if (!draggingSubItem) {
+                const handlePos = getRotationHandlePos(activeLayoutGroup);
+                if (Math.hypot(worldPos.x - handlePos.x, worldPos.y - handlePos.y) <= (15 / (zoom * scale) )) {
+                    isRotating = true;
+                } else {
                     isDragging = true;
                     dragOffsetX = worldPos.x - newlySelectedItem.x;
                     dragOffsetY = worldPos.y - newlySelectedItem.y;
@@ -984,18 +833,16 @@
             } else {
                 for (let i = placedEquipment.length - 1; i >= 0; i--) {
                      const item = placedEquipment[i];
-                    if (item.type === 'group_label' && isPointInRotatedRect(worldPos, item)) {
-                        newlySelectedItem = item;
-                        break; 
-                    }
                     if (isPointInRotatedRect(worldPos, item)) {
                         newlySelectedItem = item;
+                        break; 
                     }
                 }
                 if (newlySelectedItem) {
                     isDragging = true;
                     dragOffsetX = worldPos.x - newlySelectedItem.x;
                     dragOffsetY = worldPos.y - newlySelectedItem.y;
+
                     const itemsToMove = newlySelectedItem.groupId ? 
                         placedEquipment.filter(i => i.groupId === newlySelectedItem.groupId) : 
                         [newlySelectedItem];
@@ -1013,96 +860,14 @@
             const pos = getMousePos(e);
             const worldPos = screenToWorld(pos);
 
-            if (isRotating && selectedItem) {
-                const angle = Math.atan2(worldPos.y - selectedItem.y, worldPos.x - selectedItem.x);
-                selectedItem.rotation = (angle * 180 / Math.PI) + 90;
-            } else if (isResizing && selectedItem && selectedItem.type === 'group') {
-                const angle = -selectedItem.rotation * Math.PI / 180;
-                const s = Math.sin(angle), c = Math.cos(angle);
-                
-                const oppositeHandleKey = {tl: 'br', tr: 'bl', bl: 'tr', br: 'tl'}[activeResizeHandle];
-                const anchor = getItemHandles(selectedItem)[oppositeHandleKey];
-                
-                const vecX = worldPos.x - anchor.x;
-                const vecY = worldPos.y - anchor.y;
-
-                const localVecX = vecX * c + vecY * s;
-                const localVecY = -vecX * s + vecY * c;
-
-                const newWidth = Math.abs(localVecX);
-                const newHeight = Math.abs(localVecY);
-                
-                selectedItem.width = newWidth;
-                selectedItem.height = newHeight;
-                
-                // Smart packing logic
-                const count = selectedItem.items.length;
-                if (count > 0) {
-                    const cols = Math.ceil(Math.sqrt(count));
-                    const rows = Math.ceil(count / cols);
-                    const slotWidth = newWidth / cols;
-                    const slotHeight = newHeight / rows;
-
-                    let placedCount = 0;
-                    for (let r = 0; r < rows && placedCount < count; r++) {
-                        for (let c = 0; c < cols && placedCount < count; c++) {
-                            const item = selectedItem.items[placedCount];
-                            if(item) {
-                                const spec = equipmentData[item.type];
-                                const clearanceW = spec.clearances.left + spec.clearances.right;
-                                const clearanceH = spec.clearances.front + spec.clearances.back;
-
-                                const itemW = spec.width + clearanceW;
-                                const itemH = spec.length + clearanceH;
-
-                                const fitsNormal = (itemW <= slotWidth && itemH <= slotHeight);
-                                const fitsRotated = (itemH <= slotWidth && itemW <= slotHeight);
-
-                                if (fitsRotated && !fitsNormal) {
-                                    item.itemRotation = 90;
-                                } else if (fitsRotated && fitsNormal) {
-                                    const wasteNormal = (slotWidth - itemW) + (slotHeight - itemH);
-                                    const wasteRotated = (slotWidth - itemH) + (slotHeight - itemW);
-                                    item.itemRotation = (wasteRotated < wasteNormal) ? 90 : 0;
-                                } else {
-                                    item.itemRotation = 0;
-                                }
-                                
-                                item.isOverlapping = !fitsNormal && !fitsRotated;
-
-                                item.x = -newWidth / 2 + slotWidth / 2 + c * slotWidth;
-                                item.y = -newHeight / 2 + slotHeight / 2 + r * slotHeight;
-                            }
-                            placedCount++;
-                        }
-                    }
-                }
-
-                const newCenterX = anchor.x + (vecX / 2);
-                const newCenterY = anchor.y + (vecY / 2);
-                selectedItem.x = newCenterX;
-                selectedItem.y = newCenterY;
-
-            } else if (draggingSubItem && activeLayoutGroup) {
-                const groupAngle = -activeLayoutGroup.rotation * Math.PI / 180;
-                const s = Math.sin(groupAngle), c = Math.cos(groupAngle);
-                const localX = (worldPos.x - activeLayoutGroup.x) * c - (worldPos.y - activeLayoutGroup.y) * s;
-                const localY = (worldPos.x - activeLayoutGroup.x) * s + (worldPos.y - activeLayoutGroup.y) * c;
-                
-                draggingSubItem.x = localX - subItemDragOffsetX;
-                draggingSubItem.y = localY - subItemDragOffsetY;
-                
-                const halfW = activeLayoutGroup.width / 2;
-                const halfH = activeLayoutGroup.height / 2;
-                draggingSubItem.isOutside = Math.abs(draggingSubItem.x) > halfW || Math.abs(draggingSubItem.y) > halfH;
-
-            } else if (isDragging && selectedItem) {
+            if (isDragging && selectedItem) {
                 const newX = worldPos.x - dragOffsetX;
                 const newY = worldPos.y - dragOffsetY;
                 const deltaX = newX - selectedItem.x;
                 const deltaY = newY - selectedItem.y;
 
                 if (selectedItem.groupId) {
+                    // Move all items in the group
                     placedEquipment.forEach(item => {
                         if (item.groupId === selectedItem.groupId) {
                             item.x += deltaX;
@@ -1114,16 +879,38 @@
                      selectedItem.y = newY;
                 }
 
+            } else if (isRotating && selectedItem) {
+                 const angle = Math.atan2(worldPos.y - selectedItem.y, worldPos.x - selectedItem.x);
+                 const newRotation = (angle * 180 / Math.PI) + 90;
+                 
+                 if (selectedItem.groupId) {
+                    const groupLabel = placedEquipment.find(i => i.id === selectedItem.groupId);
+                    const angleDelta = newRotation - groupLabel.rotation;
+                    const radDelta = angleDelta * Math.PI / 180;
+                    const s = Math.sin(radDelta), c = Math.cos(radDelta);
+
+                    placedEquipment.forEach(item => {
+                        if(item.groupId === selectedItem.groupId) {
+                            const relX = item.x - groupLabel.x;
+                            const relY = item.y - groupLabel.y;
+                            item.x = relX * c - relY * s + groupLabel.x;
+                            item.y = relX * s + relY * c + groupLabel.y;
+                            item.rotation += angleDelta;
+                        }
+                    });
+                 } else if (activeLayoutGroup && selectedItem.id === activeLayoutGroup.id) {
+                     selectedItem.rotation = newRotation;
+                 }
+
+
             } else if (zoneStartPoint) {
                 tempZone.end = worldPos;
             }
-            updateInfoBox(selectedItem);
             draw();
         }
 
         function handleMouseUp(e) {
             updateButtonStates();
-            let stateChanged = false;
 
             if (zoneStartPoint) {
                 const worldPos = screenToWorld(getMousePos(e));
@@ -1135,41 +922,41 @@
                     if (currentMode === 'exclusion') exclusionZones.push(newZone);
                 }
                 zoneStartPoint = null; tempZone = null; setMode(null);
-                stateChanged = true;
+                draw();
             }
-
-            if (draggingSubItem && activeLayoutGroup && draggingSubItem.isOutside) {
-                const itemToDetach = draggingSubItem;
-                activeLayoutGroup.items = activeLayoutGroup.items.filter(item => item !== itemToDetach);
-
-                const groupAngle = activeLayoutGroup.rotation * Math.PI / 180;
-                const s = Math.sin(groupAngle), c = Math.cos(groupAngle);
-                const rotatedX = itemToDetach.x * c - itemToDetach.y * s;
-                const rotatedY = itemToDetach.x * s + itemToDetach.y * c;
-                
-                const spec = equipmentData[itemToDetach.type];
-                placedEquipment.push({
-                    id: Date.now() + Math.random(),
-                    type: itemToDetach.type, name: spec.name,
-                    x: activeLayoutGroup.x + rotatedX, y: activeLayoutGroup.y + rotatedY,
-                    rotation: activeLayoutGroup.rotation + (itemToDetach.itemRotation || 0),
-                    realWidth: spec.width, realLength: spec.length,
-                    color: spec.color, isColliding: false, groupId: null
-                });
-
-                if (activeLayoutGroup.items.length === 0) activeLayoutGroup = null;
-                stateChanged = true;
-            }
-            
-            isDragging = isRotating = isResizing = false; 
-            activeResizeHandle = draggingSubItem = null;
-
-            if (stateChanged) draw();
+            isDragging = false; isRotating = false;
         }
         
         function handleRotate() {
             if (selectedItem) {
-                selectedItem.rotation = (selectedItem.rotation + 90) % 360;
+                const groupId = selectedItem.groupId;
+
+                if (groupId) {
+                    // It's a group. We need to rotate all items around the group's center.
+                    const groupLabel = placedEquipment.find(i => i.id === groupId);
+                    if (groupLabel) {
+                        const angleDelta = 90;
+                        const radDelta = angleDelta * Math.PI / 180;
+                        const s = Math.sin(radDelta), c = Math.cos(radDelta);
+
+                        placedEquipment.forEach(item => {
+                            if(item.groupId === groupId) {
+                                // Rotate position relative to the group's center
+                                const relX = item.x - groupLabel.x;
+                                const relY = item.y - groupLabel.y;
+                                item.x = relX * c - relY * s + groupLabel.x;
+                                item.y = relX * s + relY * c + groupLabel.y;
+                                // Add to the item's own rotation
+                                item.rotation = (item.rotation + angleDelta) % 360;
+                            }
+                        });
+                        // Also rotate the group label itself
+                        groupLabel.rotation = (groupLabel.rotation + angleDelta) % 360;
+                    }
+                } else {
+                    // It's a single item or an activeLayoutGroup (unplaced)
+                    selectedItem.rotation = (selectedItem.rotation + 90) % 360;
+                }
                 updateInfoBox(selectedItem);
                 draw();
             } else {
@@ -1182,8 +969,10 @@
                 const groupId = selectedItem.groupId;
                 
                 if (groupId) {
+                    // If part of a group is selected, delete the whole group
                     placedEquipment = placedEquipment.filter(item => item.groupId !== groupId);
                 } else {
+                    // Delete just the single item
                     placedEquipment = placedEquipment.filter(item => item.id !== selectedItem.id);
                 }
                 
@@ -1264,8 +1053,6 @@
                         type: selectedEquipmentType,
                         x: -groupWidth / 2 + slotWidth / 2 + c * slotWidth,
                         y: -groupHeight / 2 + rowDepth / 2 + r * rowDepth,
-                        itemRotation: 0,
-                        isOverlapping: false,
                     });
                     placedCount++;
                 }
@@ -1300,11 +1087,6 @@
                 showModal('Placement Error', 'Cannot place group in an exclusion zone. Move it to a valid location.');
                 return;
             }
-            if (activeLayoutGroup.items.length === 0) {
-                activeLayoutGroup = null;
-                draw();
-                return;
-            }
 
             const groupAngle = activeLayoutGroup.rotation * Math.PI / 180;
             const s = Math.sin(groupAngle), c = Math.cos(groupAngle);
@@ -1317,11 +1099,16 @@
                 
                 const spec = equipmentData[item.type];
                 const newItem = {
-                    id: Date.now() + Math.random(), type: item.type, name: spec.name,
-                    x: activeLayoutGroup.x + rotatedX, y: activeLayoutGroup.y + rotatedY,
-                    rotation: activeLayoutGroup.rotation + (item.itemRotation || 0),
-                    realWidth: spec.width, realLength: spec.length,
-                    color: spec.color, isColliding: false
+                    id: Date.now() + Math.random(),
+                    type: item.type,
+                    name: spec.name,
+                    x: activeLayoutGroup.x + rotatedX,
+                    y: activeLayoutGroup.y + rotatedY,
+                    rotation: activeLayoutGroup.rotation,
+                    realWidth: spec.width,
+                    realLength: spec.length,
+                    color: spec.color,
+                    isColliding: false
                 };
                 if (isGroup) {
                     newItem.groupId = groupId;
@@ -1331,15 +1118,54 @@
 
             if (isGroup) {
                 placedEquipment.push({
-                    id: groupId, type: 'group_label', groupId: groupId,
+                    id: groupId, // Use groupId as the label's ID for easy lookup
+                    type: 'group_label',
+                    groupId: groupId,
                     name: equipmentData[activeLayoutGroup.items[0].type].name,
-                    x: activeLayoutGroup.x, y: activeLayoutGroup.y,
+                    x: activeLayoutGroup.x,
+                    y: activeLayoutGroup.y,
                     rotation: activeLayoutGroup.rotation,
-                    width: activeLayoutGroup.width, height: activeLayoutGroup.height
+                    width: activeLayoutGroup.width,
+                    height: activeLayoutGroup.height
                 });
             }
 
             activeLayoutGroup = null;
+            draw();
+        }
+
+        function handleUngroup() {
+            if (!selectedItem || !selectedItem.groupId) {
+                showModal('Action Required', 'Please select a grouped equipment set to ungroup.');
+                return;
+            }
+
+            const groupIdToUngroup = selectedItem.groupId;
+            placedEquipment.forEach(item => {
+                if (item.groupId === groupIdToUngroup) {
+                    delete item.groupId;
+                }
+            });
+
+            // Remove the group label
+            placedEquipment = placedEquipment.filter(item => item.id !== groupIdToUngroup);
+
+            selectedItem = null;
+            updateInfoBox(null);
+            draw();
+        }
+
+        function handleDeleteGroup() {
+            if (!selectedItem || !selectedItem.groupId) {
+                showModal('Action Required', 'Please select a group to delete.');
+                return;
+            }
+
+            const groupIdToDelete = selectedItem.groupId;
+            placedEquipment = placedEquipment.filter(item => item.groupId !== groupIdToDelete);
+
+            selectedItem = null;
+            updateInfoBox(null);
             draw();
         }
 
@@ -1349,12 +1175,8 @@
                 return;
             }
             
-            // This is where the API key will be handled, eventually from a backend.
-            const apiKey = ""; // Placeholder for backend integration
-            if (!apiKey) {
-                 showModal('AI Feature Not Configured', 'The AI optimization feature is not currently enabled.');
-                 return;
-            }
+            // The API key will be handled by the backend.
+            const apiKey = ""; 
 
             loadingOverlay.classList.remove('hidden');
             aiResultsEl.classList.add('hidden');
@@ -1377,22 +1199,22 @@
 
             const prompt = `You are an expert Well Site Logistics Planner. Your task is to create an optimal and safe layout for oil and gas equipment on a well site.
 
-                Constraints:
-                1.  **Site Dimensions (feet):** Area is ${siteDimensions.width.toFixed(0)} ft wide by ${siteDimensions.height.toFixed(0)} ft high. Origin (0,0) is top-left.
-                2.  **Equipment Specifications (feet):** Place the following, adhering to dimensions and clearance zones which cannot overlap.
-                    ${JSON.stringify(equipmentToPlace, null, 2)}
-                3.  **Restricted Zones (feet):**
-                    - **Exclusion Zones (No Equipment):** ${JSON.stringify(exclusionZones)}
-                4.  **Existing Layout:** Current placements are: ${JSON.stringify(placedEquipment.filter(e => e.type !== 'group_label').map(e => ({type: e.type, x: e.x, y: e.y, rotation: e.rotation})))}
+                          Constraints:
+                          1.  **Site Dimensions (feet):** Area is ${siteDimensions.width.toFixed(0)} ft wide by ${siteDimensions.height.toFixed(0)} ft high. Origin (0,0) is top-left.
+                          2.  **Equipment Specifications (feet):** Place the following, adhering to dimensions and clearance zones which cannot overlap.
+                              ${JSON.stringify(equipmentToPlace, null, 2)}
+                          3.  **Restricted Zones (feet):**
+                              - **Exclusion Zones (No Equipment):** ${JSON.stringify(exclusionZones)}
+                          4.  **Existing Layout:** Current placements are: ${JSON.stringify(placedEquipment.filter(e => e.type !== 'group_label').map(e => ({type: e.type, x: e.x, y: e.y, rotation: e.rotation})))}
 
-                **Goal:**
-                - Place all equipment within site bounds, respecting all zones and clearances.
-                - Maximize operational efficiency (e.g., blender near pumps).
-                - Keep the layout compact.
+                          **Goal:**
+                          - Place all equipment within site bounds, respecting all zones and clearances.
+                          - Maximize operational efficiency (e.g., blender near pumps).
+                          - Keep the layout compact.
 
-                **Required Output Format:** A single JSON object with "layout" and "analysis" keys.
-                - "layout": an array of objects with "type", "x", "y", "rotation".
-                - "analysis": an object with "optimalityScore" (e.g., "95%") and a "rationale" (a very short summary under 25 words).`;
+                          **Required Output Format:** A single JSON object with "layout" and "analysis" keys.
+                          - "layout": an array of objects with "type", "x", "y", "rotation".
+                          - "analysis": an object with "optimalityScore" (e.g., "95%") and a "rationale" (a very short summary under 25 words).`;
             
             try {
                 const response = await fetch(apiUrl, {
@@ -1428,74 +1250,161 @@
 
             } catch (error) {
                 console.error("Error during AI optimization:", error);
-                showModal('AI Optimization Failed', `An error occurred: ${error.message}.`);
+                showModal('AI Optimization Failed', `An error occurred: ${error.message}. Please check your API key and network connection.`);
             } finally {
                 loadingOverlay.classList.add('hidden');
             }
         }
         
         function handleExportCSV() {
-            const exportableEquipment = placedEquipment.filter(item => item.type !== 'group_label' && equipmentData[item.type]);
-
-            if (exportableEquipment.length === 0) {
-                showModal('Export Failed', 'There is no equipment on the canvas to export.');
-                return;
-            }
-            
+            if (placedEquipment.length === 0) { showModal('Export Failed', 'Canvas is empty.'); return; }
             let csvContent = "data:text/csv;charset=utf-8,Type,Name,CenterX_ft,CenterY_ft,Rotation_deg,Width_ft,Length_ft\r\n";
-            
-            exportableEquipment.forEach(item => {
-                const spec = equipmentData[item.type];
-                const w = item.realWidth || spec.width;
-                const l = item.realLength || spec.length;
-                csvContent += [item.type, item.name, (item.x).toFixed(2), (item.y).toFixed(2), item.rotation.toFixed(2), w, l].join(",") + "\r\n";
+            placedEquipment.filter(item => item.type !== 'group_label').forEach(item => {
+                csvContent += [item.type, item.name, (item.x).toFixed(2), (item.y).toFixed(2), item.rotation.toFixed(2), item.realWidth, item.realLength].join(",") + "\r\n";
             });
             const link = document.createElement("a");
             link.setAttribute("href", encodeURI(csvContent));
             link.setAttribute("download", "well_site_layout.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        function drawEquipmentForExport(ctx, item) {
+            ctx.save();
+            ctx.translate(item.x * scale, item.y * scale);
+            ctx.rotate(item.rotation * Math.PI / 180);
+            
+            const spec = equipmentData[item.type];
+            const itemWidth = spec.width * scale;
+            const itemLength = spec.length * scale;
+            
+            ctx.strokeStyle = item.isColliding ? '#ef4444' : '#a0aec0';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            const cRect = {
+                x: -itemWidth / 2 - spec.clearances.left * scale, y: -itemLength / 2 - spec.clearances.front * scale,
+                width: itemWidth + (spec.clearances.left + spec.clearances.right) * scale, 
+                height: itemLength + (spec.clearances.front + spec.clearances.back) * scale
+            };
+            ctx.strokeRect(cRect.x, cRect.y, cRect.width, cRect.height);
+            ctx.setLineDash([]);
+            
+            ctx.fillStyle = item.color;
+            ctx.globalAlpha = item.isColliding ? 0.7 : 1.0;
+            ctx.fillRect(-itemWidth / 2, -itemLength / 2, itemWidth, itemLength);
+
+            ctx.globalAlpha = 1.0;
+            ctx.fillStyle = 'white';
+
+            if (!item.groupId) {
+                ctx.save();
+                ctx.rotate(Math.PI / 2);
+
+                const baseFontSize = 10;
+                const fontSize = baseFontSize;
+                ctx.font = `bold ${fontSize}px Inter`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const text = item.name;
+                const maxLength = itemLength * 0.9;
+
+                if (itemLength > 20) {
+                     if (ctx.measureText(text).width > maxLength && text.includes(' ')) {
+                        const words = text.split(' ');
+                        const line1 = words[0];
+                        const line2 = words.slice(1).join(' ');
+                        ctx.fillText(line1, 0, -fontSize * 0.6);
+                        ctx.fillText(line2, 0, fontSize * 0.6);
+                    } else {
+                        ctx.fillText(text, 0, 0);
+                    }
+                }
+                
+                ctx.restore();
+            }
+            ctx.restore();
+        }
+
+        function drawGroupLabelForExport(ctx, item) {
+            ctx.save();
+            ctx.translate(item.x * scale, item.y * scale);
+            ctx.rotate(item.rotation * Math.PI / 180);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+
+            ctx.save();
+            ctx.rotate(Math.PI / 2);
+
+            const baseFontSize = 18;
+            const fontSize = baseFontSize;
+            ctx.font = `bold ${fontSize}px Inter`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const text = item.name;
+            const maxLength = item.height * scale * 0.9;
+
+            if (item.height * scale > 30) {
+                 if (ctx.measureText(text).width > maxLength && text.includes(' ')) {
+                    const words = text.split(' ');
+                    const line1 = words[0];
+                    const line2 = words.slice(1).join(' ');
+                    ctx.fillText(line1, 0, -fontSize * 0.6);
+                    ctx.fillText(line2, 0, fontSize * 0.6);
+                } else {
+                    ctx.fillText(text, 0, 0);
+                }
+            }
+            
+            ctx.restore();
+            ctx.restore();
         }
 
         function handleExportPDF() {
-            if (!backgroundImage) { showModal('Export Failed', 'Please upload a site plan first.'); return; }
-            
-            const originalWidth = canvas.width;
-            const originalHeight = canvas.height;
-            const originalZoom = zoom;
-            const originalPan = { ...panOffset };
-
-            canvas.width = backgroundImage.width;
-            canvas.height = backgroundImage.height;
-            zoom = 1;
-            panOffset = { x: 0, y: 0 };
-            
-            // Calculate a font scale multiplier based on the image size
-            // This makes fonts larger and more readable on high-res exports
-            const exportFontScale = Math.max(1, canvas.width / 1000); 
-            draw(exportFontScale);
-
-            try {
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-                // Create a PDF with the same dimensions as the image for a 1:1 blueprint
-                const orientation = canvas.width > canvas.height ? 'l' : 'p';
-                const doc = new jsPDF({ orientation: orientation, unit: 'px', format: [canvas.width, canvas.height] });
-                
-                doc.addImage(dataUrl, 'JPEG', 0, 0, canvas.width, canvas.height);
-                doc.save("well_site_layout.pdf");
-
-            } catch (error) {
-                console.error("PDF Export Error:", error);
-                showModal('PDF Export Failed', 'An error occurred while generating the PDF.');
-            } finally {
-                // Restore original canvas state for the user
-                canvas.width = originalWidth;
-                canvas.height = originalHeight;
-                zoom = originalZoom;
-                panOffset = originalPan;
-                draw();
+            if (!backgroundImage) {
+                showModal('Export Failed', 'Please upload a site image before exporting to PDF.');
+                return;
             }
+
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = backgroundImage.width;
+            exportCanvas.height = backgroundImage.height;
+            const exportCtx = exportCanvas.getContext('2d');
+
+            exportCtx.drawImage(backgroundImage, 0, 0);
+
+            exclusionZones.forEach(zone => {
+                exportCtx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+                exportCtx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+                exportCtx.lineWidth = 2;
+                exportCtx.fillRect(zone.x * scale, zone.y * scale, zone.width * scale, zone.height * scale);
+                exportCtx.strokeRect(zone.x * scale, zone.y * scale, zone.width * scale, zone.height * scale);
+                exportCtx.fillStyle = '#fff';
+                exportCtx.font = `bold 12px Inter`;
+                exportCtx.textAlign = 'center';
+                exportCtx.fillText('EXCLUSION ZONE', zone.x * scale + zone.width * scale / 2, zone.y * scale + zone.height * scale / 2);
+            });
+
+            placedEquipment.forEach(item => {
+                if (equipmentData[item.type]) {
+                    drawEquipmentForExport(exportCtx, item);
+                }
+            });
+
+            placedEquipment.forEach(item => {
+                if (item.type === 'group_label') {
+                    drawGroupLabelForExport(exportCtx, item);
+                }
+            });
+
+            const dataUrl = exportCanvas.toDataURL('image/jpeg', 0.8);
+            
+            const orientation = exportCanvas.width > exportCanvas.height ? 'l' : 'p';
+            const doc = new jsPDF(orientation, 'pt', [exportCanvas.width, exportCanvas.height]);
+            
+            doc.addImage(dataUrl, 'JPEG', 0, 0, exportCanvas.width, exportCanvas.height);
+            
+            doc.save("well_site_layout.pdf");
         }
 
         initialize();
@@ -1503,4 +1412,7 @@
 </script>
 </body>
 </html>
+
+
+
 
